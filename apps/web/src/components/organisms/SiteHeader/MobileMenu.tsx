@@ -1,0 +1,98 @@
+'use client';
+
+import { useState } from 'react';
+import { Icon } from '@/components/atoms/Icon';
+
+const NAV_LINKS = [
+  { label: 'Services', href: '#services' },
+  { label: 'How it works', href: '#how-it-works' },
+  { label: 'Coverage', href: '#coverage' },
+  { label: 'Reviews', href: '#reviews' },
+];
+
+export function MobileMenu() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        type="button"
+        aria-label={open ? 'Close menu' : 'Open menu'}
+        aria-expanded={open}
+        aria-controls="mobile-nav"
+        className="rr-mobile-menu-btn"
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 44,
+          height: 44,
+          background: 'transparent',
+          border: 'none',
+          color: 'var(--off-white)',
+          cursor: 'pointer',
+          borderRadius: 'var(--radius-sm)',
+        }}
+      >
+        <Icon name={open ? 'x' : 'menu'} size={24} />
+      </button>
+
+      {open && (
+        <nav
+          id="mobile-nav"
+          aria-label="Mobile navigation"
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            right: 0,
+            background: 'rgba(18,19,22,0.97)',
+            backdropFilter: 'blur(10px)',
+            borderBottom: '1px solid var(--border-default)',
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '12px 20px 20px',
+            gap: 4,
+            zIndex: 19,
+          }}
+        >
+          {NAV_LINKS.map(({ label, href }) => (
+            <a
+              key={label}
+              href={href}
+              onClick={() => setOpen(false)}
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: 18,
+                fontWeight: 500,
+                color: 'var(--steel-300)',
+                textDecoration: 'none',
+                padding: '12px 0',
+                borderBottom: '1px solid var(--border-default)',
+              }}
+            >
+              {label}
+            </a>
+          ))}
+          <a
+            href="tel:+12035550148"
+            style={{
+              marginTop: 12,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              fontFamily: 'var(--font-display)',
+              fontSize: 20,
+              color: 'var(--signal-orange)',
+              textDecoration: 'none',
+            }}
+          >
+            <Icon name="phone" size={20} />
+            (203) 555-0148
+          </a>
+        </nav>
+      )}
+    </>
+  );
+}

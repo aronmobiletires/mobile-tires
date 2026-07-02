@@ -320,6 +320,12 @@ a:hover {
   .rr-desktop-phone {
     display: none !important;
   }
+  .rr-mobile-phone {
+    display: flex !important;
+  }
+  .rr-mobile-menu-wrapper {
+    display: block !important;
+  }
 }
 @media (max-width: 560px) {
   .rr-services-grid {
