@@ -23,10 +23,7 @@ export function SiteFooter({ navigation }: SiteFooterProps) {
       style={{ background: 'var(--graphite-950)', borderTop: '1px solid var(--border-default)' }}
     >
       <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '48px 20px 32px' }}>
-        <div
-          className="rr-footer-grid"
-          style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr 1fr', gap: 32 }}
-        >
+        <div className="rr-footer-grid">
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
               <span

@@ -301,6 +301,13 @@ a:hover {
 .rr-hero-grid {
   grid-template-columns: 1.05fr 0.95fr;
 }
+
+/* Footer: 4-column grid on desktop */
+.rr-footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 32px;
+}
 @media (max-width: 860px) {
   .rr-hero-grid {
     grid-template-columns: 1fr;
