@@ -343,6 +343,18 @@ a:hover {
   }
 }
 
+/* QuoteForm 2-col grid — collapses to 1 col on small phones */
+.rr-form-2col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+@media (max-width: 480px) {
+  .rr-form-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Skip-to-content link — visible on keyboard focus, hidden otherwise */
 .rr-skip-link {
   position: absolute;
