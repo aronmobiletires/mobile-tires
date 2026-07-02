@@ -39,5 +39,11 @@ apps/studio/dist
 apps/studio/.sanity
 apps/studio/schema.json
 
-# coverage
-coverage
+# coverage reports (case-sensitive to avoid matching src/components/sections/Coverage)
+/coverage
+apps/*/coverage
+
+# Claude Design raw exports (reference only — see landing-page-design-brief.md)
+*.html.bundle
+_design-export.html
+/RoadReady Landing Page.html
