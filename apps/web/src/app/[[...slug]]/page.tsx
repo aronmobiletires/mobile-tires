@@ -1,0 +1,56 @@
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { Sections } from '@/components/sections/Sections';
+import { createDocDataAttribute } from '@/lib/sanity/dataAttribute';
+import {
+  getAllWebsitePageSlugs,
+  getHomepage,
+  getWebsitePageBySlug,
+} from '@/lib/sanity/queries/page';
+
+type RouteParams = { slug?: string[] };
+
+export const dynamicParams = true;
+export const revalidate = 86400;
+
+function isHomepageRoute(slugSegments?: string[]): boolean {
+  return !slugSegments || slugSegments.length === 0;
+}
+
+async function loadPage(slugSegments?: string[]) {
+  if (isHomepageRoute(slugSegments)) return getHomepage();
+  return getWebsitePageBySlug(slugSegments!.join('/'));
+}
+
+export async function generateStaticParams(): Promise<RouteParams[]> {
+  const pages = await getAllWebsitePageSlugs();
+  return [{ slug: [] }, ...pages.map(({ slug }) => ({ slug: slug.split('/') }))];
+}
+
+export async function generateMetadata(props: { params: Promise<RouteParams> }): Promise<Metadata> {
+  const params = await props.params;
+  const page = await loadPage(params.slug);
+
+  if (!page) {
+    return { title: 'Page not found' };
+  }
+
+  return {
+    title: page.seo?.metaTitle ?? page.title,
+    description: page.seo?.metaDescription ?? undefined,
+    robots: page.seo?.noIndex ? { index: false, follow: false } : undefined,
+  };
+}
+
+export default async function Page(props: { params: Promise<RouteParams> }) {
+  const params = await props.params;
+  const page = await loadPage(params.slug);
+
+  if (!page) notFound();
+
+  return (
+    <main data-sanity={createDocDataAttribute(page).toString()}>
+      <Sections sections={page.sections} />
+    </main>
+  );
+}
