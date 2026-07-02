@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Icon } from '@/components/atoms/Icon';
 
 const NAV_LINKS = [
@@ -12,6 +12,15 @@ const NAV_LINKS = [
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false);
+    }
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [open]);
 
   return (
     <>

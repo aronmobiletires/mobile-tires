@@ -32,6 +32,7 @@ export function Input({ icon, invalid = false, numeric = false, style, onFocus, 
         </span>
       )}
       <input
+        aria-invalid={invalid || undefined}
         onFocus={(e) => {
           setFocused(true);
           onFocus?.(e);

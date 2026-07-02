@@ -220,7 +220,7 @@ export function QuoteForm() {
             </span>
             <span style={{ height: 1, flex: 1, background: 'var(--border-default)' }} />
           </div>
-          <Input id="qf-address" placeholder="Street, city or nearest exit" icon="map-pin" />
+          <Input id="qf-address" placeholder="Street, city or nearest exit" icon="map-pin" aria-label="Street address or nearest exit" />
         </div>
 
         <div className="rr-form-2col">

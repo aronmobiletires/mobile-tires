@@ -29,6 +29,7 @@ export function Select({
   return (
     <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
       <select
+        aria-invalid={invalid || undefined}
         onFocus={(e) => {
           setFocused(true);
           onFocus?.(e);

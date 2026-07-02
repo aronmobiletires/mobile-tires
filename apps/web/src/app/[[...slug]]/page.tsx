@@ -50,9 +50,9 @@ export default async function Page(props: { params: Promise<RouteParams> }) {
 
   if (isHomepageRoute(params.slug)) {
     return (
-      <main data-component="roadready-landing">
+      <div data-component="roadready-landing">
         <LandingPage />
-      </main>
+      </div>
     );
   }
 
@@ -60,9 +60,9 @@ export default async function Page(props: { params: Promise<RouteParams> }) {
   if (!page) notFound();
 
   return (
-    <main data-sanity={createDocDataAttribute(page).toString()}>
+    <div data-sanity={createDocDataAttribute(page).toString()}>
       <Sections sections={page.sections} />
-    </main>
+    </div>
   );
 }
 
