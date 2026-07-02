@@ -41,3 +41,8 @@ apps/studio/schema.json
 
 # coverage
 coverage
+
+# Claude Design raw exports (reference only — see landing-page-design-brief.md)
+*.html.bundle
+_design-export.html
+/RoadReady Landing Page.html
