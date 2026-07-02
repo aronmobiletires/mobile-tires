@@ -1,4 +1,4 @@
-import type { ChangeEventHandler, CSSProperties, HTMLAttributes } from 'react';
+import type { ChangeEventHandler, CSSProperties, HTMLAttributes, KeyboardEvent } from 'react';
 import { Icon } from '@/components/atoms/Icon';
 
 /* PhotoUpload — dashed drop target for the optional "snap a photo of the tire"
@@ -12,8 +12,21 @@ type PhotoUploadProps = {
 
 export function PhotoUpload({ fileName, previewUrl, onPick, style, ...rest }: PhotoUploadProps) {
   const hasFile = Boolean(fileName || previewUrl);
+
+  function handleKeyDown(e: KeyboardEvent<HTMLLabelElement>) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      // Trigger the hidden file input via the label's implicit association
+      (e.currentTarget.querySelector('input[type="file"]') as HTMLInputElement | null)?.click();
+    }
+  }
+
   return (
     <label
+      tabIndex={0}
+      role="button"
+      aria-label={hasFile ? `Photo attached: ${fileName ?? 'image'}. Press Enter to change` : 'Upload a photo of the tire. Press Enter to browse files'}
+      onKeyDown={handleKeyDown}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -25,7 +38,15 @@ export function PhotoUpload({ fileName, previewUrl, onPick, style, ...rest }: Ph
         borderRadius: 'var(--radius-md)',
         cursor: 'pointer',
         transition: 'border-color var(--dur-fast) var(--ease-out)',
+        outline: 'none',
+        boxShadow: undefined,
         ...style,
+      }}
+      onFocus={(e) => {
+        e.currentTarget.style.boxShadow = 'var(--focus-ring)';
+      }}
+      onBlur={(e) => {
+        e.currentTarget.style.boxShadow = 'none';
       }}
       {...rest}
     >
