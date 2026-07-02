@@ -58,8 +58,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       className={`${fontDisplay.variable} ${fontBody.variable} ${fontCondensed.variable}`}
     >
       <body>
+        <a href="#main-content" className="rr-skip-link">
+          Skip to main content
+        </a>
         <SiteHeader navigation={headerNavigation} />
-        {children}
+        <main id="main-content">
+          {children}
+        </main>
         <SiteFooter navigation={footerNavigation} />
         <SanityLive />
         {isDraftMode && <VisualEditing />}

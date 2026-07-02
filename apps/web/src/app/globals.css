@@ -329,3 +329,26 @@ a:hover {
     gap: 18px !important;
   }
 }
+
+/* Skip-to-content link — visible on keyboard focus, hidden otherwise */
+.rr-skip-link {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -60px;
+  z-index: 9999;
+  padding: 10px 24px;
+  background: var(--signal-orange);
+  color: var(--off-white);
+  font-family: var(--font-condensed);
+  font-weight: 700;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: top var(--dur-fast) var(--ease-out);
+}
+.rr-skip-link:focus {
+  top: 8px;
+}
