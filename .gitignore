@@ -47,3 +47,5 @@ apps/*/coverage
 *.html.bundle
 _design-export.html
 /RoadReady Landing Page.html
+.vercel
+.env*
