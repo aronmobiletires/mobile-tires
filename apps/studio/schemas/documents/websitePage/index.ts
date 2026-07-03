@@ -37,7 +37,17 @@ export const websitePage = defineType({
       title: 'Sections',
       type: 'array',
       description: 'Page sections. Add, remove, and reorder to build the page.',
-      of: [defineArrayMember({ type: 'richText' })],
+      of: [
+          defineArrayMember({ type: 'richText' }),
+          defineArrayMember({ type: 'heroSection' }),
+          defineArrayMember({ type: 'trustBar' }),
+          defineArrayMember({ type: 'servicesSection' }),
+          defineArrayMember({ type: 'howItWorks' }),
+          defineArrayMember({ type: 'reviewsSection' }),
+          defineArrayMember({ type: 'coverageSection' }),
+          defineArrayMember({ type: 'depositCallout' }),
+          defineArrayMember({ type: 'smsBanner' }),
+        ],
       group: 'content',
     }),
     defineField({

@@ -1,14 +1,11 @@
 import { TrustMarker } from '@/components/molecules/TrustMarker';
+import type { HomepageQueryResult } from '@/sanity.types';
 import type { IconName } from '@/components/atoms/Icon';
 
-const ITEMS: { icon: IconName; value: string; label: string }[] = [
-  { icon: 'map-pin', value: '40+ towns', label: 'Greater Hartford & I-84' },
-  { icon: 'clock', value: '28 min', label: 'Avg dispatch time' },
-  { icon: 'wrench', value: '12,000+', label: 'Jobs completed since 2016' },
-  { icon: 'shield', value: 'Licensed & insured', label: 'CT reg. #48812' },
-];
+type PageSection = NonNullable<NonNullable<HomepageQueryResult>['sections']>[number];
+export type TrustBarProps = Extract<PageSection, { _type: 'trustBar' }>;
 
-export function TrustBar() {
+export function TrustBar({ items }: TrustBarProps) {
   return (
     <section
       style={{
@@ -28,8 +25,13 @@ export function TrustBar() {
           justifyContent: 'space-between',
         }}
       >
-        {ITEMS.map((i) => (
-          <TrustMarker key={i.label} {...i} />
+        {items.map((item, i) => (
+          <TrustMarker
+            key={i}
+            icon={item.icon ?? undefined as IconName | undefined}
+            value={item.value}
+            label={item.label}
+          />
         ))}
       </div>
     </section>

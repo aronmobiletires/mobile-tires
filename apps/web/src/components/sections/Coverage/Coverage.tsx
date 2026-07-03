@@ -1,28 +1,18 @@
 import { Icon } from '@/components/atoms/Icon';
+import type { HomepageQueryResult } from '@/sanity.types';
 
-const TOWNS = [
-  'Hartford',
-  'West Hartford',
-  'Waterbury',
-  'New Britain',
-  'Bristol',
-  'Farmington',
-  'Southington',
-  'Meriden',
-  'Manchester',
-  'Newington',
-  'Cheshire',
-  'Plainville',
-];
+type PageSection = NonNullable<NonNullable<HomepageQueryResult>['sections']>[number];
+export type CoverageSectionProps = Extract<PageSection, { _type: 'coverageSection' }>;
 
-export function Coverage() {
+export function Coverage({ eyebrow, heading, body, towns }: CoverageSectionProps) {
   return (
-    <section id="coverage" style={{ background: 'var(--bg-page)' }}>
+    <section id="coverage" aria-labelledby="coverage-heading" style={{ background: 'var(--bg-page)' }}>
       <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '64px 20px' }}>
         <div className="rr-coverage" style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 36, alignItems: 'stretch' }}>
           <div>
-            <div className="rr-eyebrow">Where we roll</div>
+            {eyebrow && <div className="rr-eyebrow">{eyebrow}</div>}
             <h2
+              id="coverage-heading"
               style={{
                 margin: '8px 0 8px',
                 fontFamily: 'var(--font-display)',
@@ -32,16 +22,17 @@ export function Coverage() {
                 color: 'var(--off-white)',
               }}
             >
-              Coverage area
+              {heading}
             </h2>
-            <p style={{ margin: '0 0 20px', fontSize: 16, color: 'var(--steel-300)', maxWidth: 420 }}>
-              Greater Hartford and the I-84 corridor. Not sure if you&apos;re in range? Text your location — we&apos;ll
-              tell you straight.
-            </p>
+            {body && (
+              <p style={{ margin: '0 0 20px', fontSize: 16, color: 'var(--steel-300)', maxWidth: 420 }}>
+                {body}
+              </p>
+            )}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {TOWNS.map((t) => (
+              {towns.map((town) => (
                 <span
-                  key={t}
+                  key={town}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -58,12 +49,11 @@ export function Coverage() {
                   <span style={{ display: 'flex', color: 'var(--signal-orange)' }}>
                     <Icon name="map-pin" size={14} />
                   </span>
-                  {t}
+                  {town}
                 </span>
               ))}
             </div>
           </div>
-          {/* Map placeholder — flat graphite with tread + brackets, per brand (no stock art) */}
           <div
             className="rr-brackets"
             style={{

@@ -1,24 +1,18 @@
 import { Fragment } from 'react';
 import { StepItem } from '@/components/molecules/StepItem';
 import { TreadDivider } from '@/components/atoms/TreadDivider';
+import type { HomepageQueryResult } from '@/sanity.types';
 
-const STEPS = [
-  { n: 1, t: 'Request a tech', d: 'Fill the form or text us. Share your location — GPS is fastest.', active: true },
-  { n: 2, t: 'We locate & dispatch', d: "You'll see a live ETA the moment a technician rolls toward you." },
-  {
-    n: 3,
-    t: 'Deposit only if it applies',
-    d: "$70 deposit only when the ETA runs over 35 min or it's after hours. Otherwise, nothing up front.",
-  },
-  { n: 4, t: 'Fixed on-site, pay the balance', d: "We fix it where you're parked. Pay the rest when the job's done." },
-];
+type PageSection = NonNullable<NonNullable<HomepageQueryResult>['sections']>[number];
+export type HowItWorksProps = Extract<PageSection, { _type: 'howItWorks' }>;
 
-export function HowItWorks() {
+export function HowItWorks({ eyebrow, heading, steps }: HowItWorksProps) {
   return (
-    <section id="how-it-works" style={{ background: 'var(--bg-page)' }}>
+    <section id="how-it-works" aria-labelledby="how-it-works-heading" style={{ background: 'var(--bg-page)' }}>
       <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '64px 20px' }}>
-        <div className="rr-eyebrow">The process</div>
+        {eyebrow && <div className="rr-eyebrow">{eyebrow}</div>}
         <h2
+          id="how-it-works-heading"
           style={{
             margin: '8px 0 32px',
             fontFamily: 'var(--font-display)',
@@ -28,15 +22,15 @@ export function HowItWorks() {
             color: 'var(--off-white)',
           }}
         >
-          How it works
+          {heading}
         </h2>
         <div className="rr-steps" style={{ display: 'grid', gap: 0 }}>
-          {STEPS.map((s, idx) => (
-            <Fragment key={s.n}>
-              <StepItem number={s.n} title={s.t} active={s.active} style={{ padding: '4px 0' }}>
-                {s.d}
+          {steps.map((step, idx) => (
+            <Fragment key={idx}>
+              <StepItem number={idx + 1} title={step.title} active={idx === 0} style={{ padding: '4px 0' }}>
+                {step.description}
               </StepItem>
-              {idx < STEPS.length - 1 && <TreadDivider style={{ margin: '18px 0' }} />}
+              {idx < steps.length - 1 && <TreadDivider style={{ margin: '18px 0' }} />}
             </Fragment>
           ))}
         </div>

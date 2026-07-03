@@ -15,6 +15,166 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: schema.json
+export type SmsBanner = {
+  _type: 'smsBanner';
+  headline: string;
+  body?: string;
+  phoneNumber: string;
+  phoneDisplay: string;
+};
+
+export type DepositCallout = {
+  _type: 'depositCallout';
+  eyebrow?: string;
+  heading: string;
+  body?: string;
+  depositAmount: string;
+  depositLabel?: string;
+  depositNote?: string;
+  reasons?: Array<{
+    icon?:
+      | 'phone'
+      | 'map-pin'
+      | 'navigation'
+      | 'clock'
+      | 'wrench'
+      | 'check'
+      | 'check-circle'
+      | 'arrow-right'
+      | 'star'
+      | 'shield'
+      | 'truck'
+      | 'alert-triangle'
+      | 'dollar-sign'
+      | 'message'
+      | 'gauge';
+    title: string;
+    description?: string;
+    _type: 'depositReason';
+    _key: string;
+  }>;
+};
+
+export type CoverageSection = {
+  _type: 'coverageSection';
+  eyebrow?: string;
+  heading: string;
+  body?: string;
+  towns: Array<string>;
+};
+
+export type ReviewsSection = {
+  _type: 'reviewsSection';
+  eyebrow?: string;
+  heading: string;
+  rating: number;
+  reviewCount: number;
+  quotes: Array<{
+    quote: string;
+    name: string;
+    city?: string;
+    _type: 'reviewQuote';
+    _key: string;
+  }>;
+};
+
+export type HowItWorks = {
+  _type: 'howItWorks';
+  eyebrow?: string;
+  heading: string;
+  steps: Array<{
+    title: string;
+    description?: string;
+    _type: 'step';
+    _key: string;
+  }>;
+};
+
+export type ServicesSection = {
+  _type: 'servicesSection';
+  eyebrow?: string;
+  heading: string;
+  services: Array<{
+    icon?:
+      | 'phone'
+      | 'map-pin'
+      | 'navigation'
+      | 'clock'
+      | 'wrench'
+      | 'check'
+      | 'check-circle'
+      | 'arrow-right'
+      | 'star'
+      | 'shield'
+      | 'truck'
+      | 'alert-triangle'
+      | 'dollar-sign'
+      | 'message'
+      | 'gauge';
+    title: string;
+    description?: string;
+    price?: string;
+    _type: 'serviceItem';
+    _key: string;
+  }>;
+};
+
+export type TrustBar = {
+  _type: 'trustBar';
+  items: Array<{
+    icon?:
+      | 'phone'
+      | 'map-pin'
+      | 'navigation'
+      | 'clock'
+      | 'wrench'
+      | 'check'
+      | 'check-circle'
+      | 'arrow-right'
+      | 'star'
+      | 'shield'
+      | 'truck'
+      | 'alert-triangle'
+      | 'dollar-sign'
+      | 'message'
+      | 'gauge';
+    value: string;
+    label: string;
+    _type: 'trustBarItem';
+    _key: string;
+  }>;
+};
+
+export type HeroSection = {
+  _type: 'heroSection';
+  eyebrow?: string;
+  headlineMain: string;
+  headlineAccent: string;
+  body?: string;
+  trustMarkers?: Array<{
+    icon?:
+      | 'phone'
+      | 'map-pin'
+      | 'navigation'
+      | 'clock'
+      | 'wrench'
+      | 'check'
+      | 'check-circle'
+      | 'arrow-right'
+      | 'star'
+      | 'shield'
+      | 'truck'
+      | 'alert-triangle'
+      | 'dollar-sign'
+      | 'message'
+      | 'gauge';
+    value: string;
+    label: string;
+    _type: 'trustMarker';
+    _key: string;
+  }>;
+};
+
 export type RichText = {
   _type: 'richText';
   body: Array<{
@@ -169,9 +329,33 @@ export type WebsitePage = {
   title: string;
   slug: Slug;
   sections?: Array<
-    {
-      _key: string;
-    } & RichText
+    | ({
+        _key: string;
+      } & RichText)
+    | ({
+        _key: string;
+      } & HeroSection)
+    | ({
+        _key: string;
+      } & TrustBar)
+    | ({
+        _key: string;
+      } & ServicesSection)
+    | ({
+        _key: string;
+      } & HowItWorks)
+    | ({
+        _key: string;
+      } & ReviewsSection)
+    | ({
+        _key: string;
+      } & CoverageSection)
+    | ({
+        _key: string;
+      } & DepositCallout)
+    | ({
+        _key: string;
+      } & SmsBanner)
   >;
   pageSettings?: PageSettings;
   seo?: Seo;
@@ -281,6 +465,14 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
+  | SmsBanner
+  | DepositCallout
+  | CoverageSection
+  | ReviewsSection
+  | HowItWorks
+  | ServicesSection
+  | TrustBar
+  | HeroSection
   | RichText
   | WebsitePageReference
   | Link
@@ -370,7 +562,7 @@ export type FooterNavigationQueryResult = {
 
 // Source: ../web/src/lib/sanity/queries/page.ts
 // Variable: pageProjection
-// Query: {  _id,  _type,  title,  "slug": slug.current,  seo,  pageSettings,  sections[]{    _type,    _key,    _type == "richText" => {      body    }  }}
+// Query: {  _id,  _type,  title,  "slug": slug.current,  seo,  pageSettings,  sections[]{    _type,    _key,    _type == "richText" => {      body    },    _type == "heroSection" => {      eyebrow,      headlineMain,      headlineAccent,      body,      trustMarkers[]{ icon, value, label }    },    _type == "trustBar" => {      items[]{ icon, value, label }    },    _type == "servicesSection" => {      eyebrow,      heading,      services[]{ icon, title, description, price }    },    _type == "howItWorks" => {      eyebrow,      heading,      steps[]{ title, description }    },    _type == "reviewsSection" => {      eyebrow,      heading,      rating,      reviewCount,      quotes[]{ quote, name, city }    },    _type == "coverageSection" => {      eyebrow,      heading,      body,      towns    },    _type == "depositCallout" => {      eyebrow,      heading,      body,      depositAmount,      depositLabel,      depositNote,      reasons[]{ icon, title, description }    },    _type == "smsBanner" => {      headline,      body,      phoneNumber,      phoneDisplay    }  }}
 export type PageProjectionResult = {
   _id: never;
   _type: never;
@@ -383,7 +575,7 @@ export type PageProjectionResult = {
 
 // Source: ../web/src/lib/sanity/queries/page.ts
 // Variable: homepageQuery
-// Query: *[_id == $id && _type == "websitePage"][0]{  _id,  _type,  title,  "slug": slug.current,  seo,  pageSettings,  sections[]{    _type,    _key,    _type == "richText" => {      body    }  }}
+// Query: *[_id == $id && _type == "websitePage"][0]{  _id,  _type,  title,  "slug": slug.current,  seo,  pageSettings,  sections[]{    _type,    _key,    _type == "richText" => {      body    },    _type == "heroSection" => {      eyebrow,      headlineMain,      headlineAccent,      body,      trustMarkers[]{ icon, value, label }    },    _type == "trustBar" => {      items[]{ icon, value, label }    },    _type == "servicesSection" => {      eyebrow,      heading,      services[]{ icon, title, description, price }    },    _type == "howItWorks" => {      eyebrow,      heading,      steps[]{ title, description }    },    _type == "reviewsSection" => {      eyebrow,      heading,      rating,      reviewCount,      quotes[]{ quote, name, city }    },    _type == "coverageSection" => {      eyebrow,      heading,      body,      towns    },    _type == "depositCallout" => {      eyebrow,      heading,      body,      depositAmount,      depositLabel,      depositNote,      reasons[]{ icon, title, description }    },    _type == "smsBanner" => {      headline,      body,      phoneNumber,      phoneDisplay    }  }}
 export type HomepageQueryResult = {
   _id: string;
   _type: 'websitePage';
@@ -391,33 +583,187 @@ export type HomepageQueryResult = {
   slug: string;
   seo: Seo | null;
   pageSettings: PageSettings | null;
-  sections: Array<{
-    _type: 'richText';
-    _key: string;
-    body: Array<{
-      children?: Array<{
-        marks?: Array<string>;
-        text?: string;
-        _type: 'span';
+  sections: Array<
+    | {
+        _type: 'coverageSection';
         _key: string;
-      }>;
-      style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal';
-      listItem?: 'bullet' | 'number';
-      markDefs?: Array<{
-        href?: string;
-        _type: 'link';
+        eyebrow: string | null;
+        heading: string;
+        body: string | null;
+        towns: Array<string>;
+      }
+    | {
+        _type: 'depositCallout';
         _key: string;
-      }>;
-      level?: number;
-      _type: 'block';
-      _key: string;
-    }>;
-  }> | null;
+        eyebrow: string | null;
+        heading: string;
+        body: string | null;
+        depositAmount: string;
+        depositLabel: string | null;
+        depositNote: string | null;
+        reasons: Array<{
+          icon:
+            | 'alert-triangle'
+            | 'arrow-right'
+            | 'check-circle'
+            | 'check'
+            | 'clock'
+            | 'dollar-sign'
+            | 'gauge'
+            | 'map-pin'
+            | 'message'
+            | 'navigation'
+            | 'phone'
+            | 'shield'
+            | 'star'
+            | 'truck'
+            | 'wrench'
+            | null;
+          title: string;
+          description: string | null;
+        }> | null;
+      }
+    | {
+        _type: 'heroSection';
+        _key: string;
+        eyebrow: string | null;
+        headlineMain: string;
+        headlineAccent: string;
+        body: string | null;
+        trustMarkers: Array<{
+          icon:
+            | 'alert-triangle'
+            | 'arrow-right'
+            | 'check-circle'
+            | 'check'
+            | 'clock'
+            | 'dollar-sign'
+            | 'gauge'
+            | 'map-pin'
+            | 'message'
+            | 'navigation'
+            | 'phone'
+            | 'shield'
+            | 'star'
+            | 'truck'
+            | 'wrench'
+            | null;
+          value: string;
+          label: string;
+        }> | null;
+      }
+    | {
+        _type: 'howItWorks';
+        _key: string;
+        eyebrow: string | null;
+        heading: string;
+        steps: Array<{
+          title: string;
+          description: string | null;
+        }>;
+      }
+    | {
+        _type: 'reviewsSection';
+        _key: string;
+        eyebrow: string | null;
+        heading: string;
+        rating: number;
+        reviewCount: number;
+        quotes: Array<{
+          quote: string;
+          name: string;
+          city: string | null;
+        }>;
+      }
+    | {
+        _type: 'richText';
+        _key: string;
+        body: Array<{
+          children?: Array<{
+            marks?: Array<string>;
+            text?: string;
+            _type: 'span';
+            _key: string;
+          }>;
+          style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal';
+          listItem?: 'bullet' | 'number';
+          markDefs?: Array<{
+            href?: string;
+            _type: 'link';
+            _key: string;
+          }>;
+          level?: number;
+          _type: 'block';
+          _key: string;
+        }>;
+      }
+    | {
+        _type: 'servicesSection';
+        _key: string;
+        eyebrow: string | null;
+        heading: string;
+        services: Array<{
+          icon:
+            | 'alert-triangle'
+            | 'arrow-right'
+            | 'check-circle'
+            | 'check'
+            | 'clock'
+            | 'dollar-sign'
+            | 'gauge'
+            | 'map-pin'
+            | 'message'
+            | 'navigation'
+            | 'phone'
+            | 'shield'
+            | 'star'
+            | 'truck'
+            | 'wrench'
+            | null;
+          title: string;
+          description: string | null;
+          price: string | null;
+        }>;
+      }
+    | {
+        _type: 'smsBanner';
+        _key: string;
+        headline: string;
+        body: string | null;
+        phoneNumber: string;
+        phoneDisplay: string;
+      }
+    | {
+        _type: 'trustBar';
+        _key: string;
+        items: Array<{
+          icon:
+            | 'alert-triangle'
+            | 'arrow-right'
+            | 'check-circle'
+            | 'check'
+            | 'clock'
+            | 'dollar-sign'
+            | 'gauge'
+            | 'map-pin'
+            | 'message'
+            | 'navigation'
+            | 'phone'
+            | 'shield'
+            | 'star'
+            | 'truck'
+            | 'wrench'
+            | null;
+          value: string;
+          label: string;
+        }>;
+      }
+  > | null;
 } | null;
 
 // Source: ../web/src/lib/sanity/queries/page.ts
 // Variable: websitePageBySlugQuery
-// Query: *[_type == "websitePage" && slug.current == $slug && _id != $homepageId][0]{  _id,  _type,  title,  "slug": slug.current,  seo,  pageSettings,  sections[]{    _type,    _key,    _type == "richText" => {      body    }  }}
+// Query: *[_type == "websitePage" && slug.current == $slug && _id != $homepageId][0]{  _id,  _type,  title,  "slug": slug.current,  seo,  pageSettings,  sections[]{    _type,    _key,    _type == "richText" => {      body    },    _type == "heroSection" => {      eyebrow,      headlineMain,      headlineAccent,      body,      trustMarkers[]{ icon, value, label }    },    _type == "trustBar" => {      items[]{ icon, value, label }    },    _type == "servicesSection" => {      eyebrow,      heading,      services[]{ icon, title, description, price }    },    _type == "howItWorks" => {      eyebrow,      heading,      steps[]{ title, description }    },    _type == "reviewsSection" => {      eyebrow,      heading,      rating,      reviewCount,      quotes[]{ quote, name, city }    },    _type == "coverageSection" => {      eyebrow,      heading,      body,      towns    },    _type == "depositCallout" => {      eyebrow,      heading,      body,      depositAmount,      depositLabel,      depositNote,      reasons[]{ icon, title, description }    },    _type == "smsBanner" => {      headline,      body,      phoneNumber,      phoneDisplay    }  }}
 export type WebsitePageBySlugQueryResult = {
   _id: string;
   _type: 'websitePage';
@@ -425,28 +771,182 @@ export type WebsitePageBySlugQueryResult = {
   slug: string;
   seo: Seo | null;
   pageSettings: PageSettings | null;
-  sections: Array<{
-    _type: 'richText';
-    _key: string;
-    body: Array<{
-      children?: Array<{
-        marks?: Array<string>;
-        text?: string;
-        _type: 'span';
+  sections: Array<
+    | {
+        _type: 'coverageSection';
         _key: string;
-      }>;
-      style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal';
-      listItem?: 'bullet' | 'number';
-      markDefs?: Array<{
-        href?: string;
-        _type: 'link';
+        eyebrow: string | null;
+        heading: string;
+        body: string | null;
+        towns: Array<string>;
+      }
+    | {
+        _type: 'depositCallout';
         _key: string;
-      }>;
-      level?: number;
-      _type: 'block';
-      _key: string;
-    }>;
-  }> | null;
+        eyebrow: string | null;
+        heading: string;
+        body: string | null;
+        depositAmount: string;
+        depositLabel: string | null;
+        depositNote: string | null;
+        reasons: Array<{
+          icon:
+            | 'alert-triangle'
+            | 'arrow-right'
+            | 'check-circle'
+            | 'check'
+            | 'clock'
+            | 'dollar-sign'
+            | 'gauge'
+            | 'map-pin'
+            | 'message'
+            | 'navigation'
+            | 'phone'
+            | 'shield'
+            | 'star'
+            | 'truck'
+            | 'wrench'
+            | null;
+          title: string;
+          description: string | null;
+        }> | null;
+      }
+    | {
+        _type: 'heroSection';
+        _key: string;
+        eyebrow: string | null;
+        headlineMain: string;
+        headlineAccent: string;
+        body: string | null;
+        trustMarkers: Array<{
+          icon:
+            | 'alert-triangle'
+            | 'arrow-right'
+            | 'check-circle'
+            | 'check'
+            | 'clock'
+            | 'dollar-sign'
+            | 'gauge'
+            | 'map-pin'
+            | 'message'
+            | 'navigation'
+            | 'phone'
+            | 'shield'
+            | 'star'
+            | 'truck'
+            | 'wrench'
+            | null;
+          value: string;
+          label: string;
+        }> | null;
+      }
+    | {
+        _type: 'howItWorks';
+        _key: string;
+        eyebrow: string | null;
+        heading: string;
+        steps: Array<{
+          title: string;
+          description: string | null;
+        }>;
+      }
+    | {
+        _type: 'reviewsSection';
+        _key: string;
+        eyebrow: string | null;
+        heading: string;
+        rating: number;
+        reviewCount: number;
+        quotes: Array<{
+          quote: string;
+          name: string;
+          city: string | null;
+        }>;
+      }
+    | {
+        _type: 'richText';
+        _key: string;
+        body: Array<{
+          children?: Array<{
+            marks?: Array<string>;
+            text?: string;
+            _type: 'span';
+            _key: string;
+          }>;
+          style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal';
+          listItem?: 'bullet' | 'number';
+          markDefs?: Array<{
+            href?: string;
+            _type: 'link';
+            _key: string;
+          }>;
+          level?: number;
+          _type: 'block';
+          _key: string;
+        }>;
+      }
+    | {
+        _type: 'servicesSection';
+        _key: string;
+        eyebrow: string | null;
+        heading: string;
+        services: Array<{
+          icon:
+            | 'alert-triangle'
+            | 'arrow-right'
+            | 'check-circle'
+            | 'check'
+            | 'clock'
+            | 'dollar-sign'
+            | 'gauge'
+            | 'map-pin'
+            | 'message'
+            | 'navigation'
+            | 'phone'
+            | 'shield'
+            | 'star'
+            | 'truck'
+            | 'wrench'
+            | null;
+          title: string;
+          description: string | null;
+          price: string | null;
+        }>;
+      }
+    | {
+        _type: 'smsBanner';
+        _key: string;
+        headline: string;
+        body: string | null;
+        phoneNumber: string;
+        phoneDisplay: string;
+      }
+    | {
+        _type: 'trustBar';
+        _key: string;
+        items: Array<{
+          icon:
+            | 'alert-triangle'
+            | 'arrow-right'
+            | 'check-circle'
+            | 'check'
+            | 'clock'
+            | 'dollar-sign'
+            | 'gauge'
+            | 'map-pin'
+            | 'message'
+            | 'navigation'
+            | 'phone'
+            | 'shield'
+            | 'star'
+            | 'truck'
+            | 'wrench'
+            | null;
+          value: string;
+          label: string;
+        }>;
+      }
+  > | null;
 } | null;
 
 // Source: ../web/src/lib/sanity/queries/page.ts
@@ -482,9 +982,9 @@ declare module '@sanity/client' {
     '*[_id == $id && _type == "siteSettings"][0]{\n  _id,\n  _type,\n  siteName,\n  siteDescription,\n  defaultOpenGraphImage,\n  organizationLegalName,\n  organizationUrl\n}': SiteSettingsQueryResult;
     '*[_id == $id && _type == "headerNavigation"][0]{\n  _id,\n  _type,\n  title,\n  links[]{\n  label,\n  linkType,\n  openInNewTab,\n  "href": select(\n    linkType == "external" => externalUrl,\n    linkType == "internal" => "/" + internalReference->slug.current,\n    null\n  )\n}\n}': HeaderNavigationQueryResult;
     '*[_id == $id && _type == "footerNavigation"][0]{\n  _id,\n  _type,\n  title,\n  columns[]{\n    _key,\n    heading,\n    links[]{\n  label,\n  linkType,\n  openInNewTab,\n  "href": select(\n    linkType == "external" => externalUrl,\n    linkType == "internal" => "/" + internalReference->slug.current,\n    null\n  )\n}\n  },\n  copyright\n}': FooterNavigationQueryResult;
-    '{\n  _id,\n  _type,\n  title,\n  "slug": slug.current,\n  seo,\n  pageSettings,\n  sections[]{\n    _type,\n    _key,\n    _type == "richText" => {\n      body\n    }\n  }\n}': PageProjectionResult;
-    '*[_id == $id && _type == "websitePage"][0]{\n  _id,\n  _type,\n  title,\n  "slug": slug.current,\n  seo,\n  pageSettings,\n  sections[]{\n    _type,\n    _key,\n    _type == "richText" => {\n      body\n    }\n  }\n}': HomepageQueryResult;
-    '\n  *[_type == "websitePage" && slug.current == $slug && _id != $homepageId][0]{\n  _id,\n  _type,\n  title,\n  "slug": slug.current,\n  seo,\n  pageSettings,\n  sections[]{\n    _type,\n    _key,\n    _type == "richText" => {\n      body\n    }\n  }\n}\n': WebsitePageBySlugQueryResult;
+    '{\n  _id,\n  _type,\n  title,\n  "slug": slug.current,\n  seo,\n  pageSettings,\n  sections[]{\n    _type,\n    _key,\n    _type == "richText" => {\n      body\n    },\n    _type == "heroSection" => {\n      eyebrow,\n      headlineMain,\n      headlineAccent,\n      body,\n      trustMarkers[]{ icon, value, label }\n    },\n    _type == "trustBar" => {\n      items[]{ icon, value, label }\n    },\n    _type == "servicesSection" => {\n      eyebrow,\n      heading,\n      services[]{ icon, title, description, price }\n    },\n    _type == "howItWorks" => {\n      eyebrow,\n      heading,\n      steps[]{ title, description }\n    },\n    _type == "reviewsSection" => {\n      eyebrow,\n      heading,\n      rating,\n      reviewCount,\n      quotes[]{ quote, name, city }\n    },\n    _type == "coverageSection" => {\n      eyebrow,\n      heading,\n      body,\n      towns\n    },\n    _type == "depositCallout" => {\n      eyebrow,\n      heading,\n      body,\n      depositAmount,\n      depositLabel,\n      depositNote,\n      reasons[]{ icon, title, description }\n    },\n    _type == "smsBanner" => {\n      headline,\n      body,\n      phoneNumber,\n      phoneDisplay\n    }\n  }\n}': PageProjectionResult;
+    '*[_id == $id && _type == "websitePage"][0]{\n  _id,\n  _type,\n  title,\n  "slug": slug.current,\n  seo,\n  pageSettings,\n  sections[]{\n    _type,\n    _key,\n    _type == "richText" => {\n      body\n    },\n    _type == "heroSection" => {\n      eyebrow,\n      headlineMain,\n      headlineAccent,\n      body,\n      trustMarkers[]{ icon, value, label }\n    },\n    _type == "trustBar" => {\n      items[]{ icon, value, label }\n    },\n    _type == "servicesSection" => {\n      eyebrow,\n      heading,\n      services[]{ icon, title, description, price }\n    },\n    _type == "howItWorks" => {\n      eyebrow,\n      heading,\n      steps[]{ title, description }\n    },\n    _type == "reviewsSection" => {\n      eyebrow,\n      heading,\n      rating,\n      reviewCount,\n      quotes[]{ quote, name, city }\n    },\n    _type == "coverageSection" => {\n      eyebrow,\n      heading,\n      body,\n      towns\n    },\n    _type == "depositCallout" => {\n      eyebrow,\n      heading,\n      body,\n      depositAmount,\n      depositLabel,\n      depositNote,\n      reasons[]{ icon, title, description }\n    },\n    _type == "smsBanner" => {\n      headline,\n      body,\n      phoneNumber,\n      phoneDisplay\n    }\n  }\n}': HomepageQueryResult;
+    '\n  *[_type == "websitePage" && slug.current == $slug && _id != $homepageId][0]{\n  _id,\n  _type,\n  title,\n  "slug": slug.current,\n  seo,\n  pageSettings,\n  sections[]{\n    _type,\n    _key,\n    _type == "richText" => {\n      body\n    },\n    _type == "heroSection" => {\n      eyebrow,\n      headlineMain,\n      headlineAccent,\n      body,\n      trustMarkers[]{ icon, value, label }\n    },\n    _type == "trustBar" => {\n      items[]{ icon, value, label }\n    },\n    _type == "servicesSection" => {\n      eyebrow,\n      heading,\n      services[]{ icon, title, description, price }\n    },\n    _type == "howItWorks" => {\n      eyebrow,\n      heading,\n      steps[]{ title, description }\n    },\n    _type == "reviewsSection" => {\n      eyebrow,\n      heading,\n      rating,\n      reviewCount,\n      quotes[]{ quote, name, city }\n    },\n    _type == "coverageSection" => {\n      eyebrow,\n      heading,\n      body,\n      towns\n    },\n    _type == "depositCallout" => {\n      eyebrow,\n      heading,\n      body,\n      depositAmount,\n      depositLabel,\n      depositNote,\n      reasons[]{ icon, title, description }\n    },\n    _type == "smsBanner" => {\n      headline,\n      body,\n      phoneNumber,\n      phoneDisplay\n    }\n  }\n}\n': WebsitePageBySlugQueryResult;
     '\n  *[_type == "websitePage" && defined(slug.current) && _id != $homepageId]{\n    "slug": slug.current\n  }\n': AllNonHomepageSlugsQueryResult;
     '\n  *[_type == "websitePage" && defined(slug.current) && seo.noIndex != true]\n    | order(_updatedAt desc) {\n    "slug": slug.current,\n    "lastModified": _updatedAt,\n    "isHomepage": _id == $homepageId\n  }\n': AllWebsitePagesForSitemapQueryResult;
     '\n  *[_type == "redirect" && defined(from) && defined(to)]{\n    from,\n    to,\n    redirectType\n  }\n': AllRedirectsQueryResult;

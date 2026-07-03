@@ -198,8 +198,21 @@ export function QuoteForm() {
           </div>
         </div>
 
-        <div>
-          <FieldLabel>Location</FieldLabel>
+        <fieldset style={{ border: 'none', margin: 0, padding: 0 }}>
+          <legend
+            style={{
+              display: 'block',
+              marginBottom: 6,
+              fontFamily: 'var(--font-condensed)',
+              fontWeight: 700,
+              fontSize: 13,
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              color: 'var(--steel-300)',
+            }}
+          >
+            Location
+          </legend>
           <LocationButton
             located={located}
             address="I-84 W, Exit 17 · Waterbury, CT"
@@ -221,7 +234,7 @@ export function QuoteForm() {
             <span style={{ height: 1, flex: 1, background: 'var(--border-default)' }} />
           </div>
           <Input id="qf-address" placeholder="Street, city or nearest exit" icon="map-pin" aria-label="Street address or nearest exit" />
-        </div>
+        </fieldset>
 
         <div className="rr-form-2col">
           <div>
@@ -270,7 +283,6 @@ export function QuoteForm() {
         </div>
 
         <div>
-          <FieldLabel optional>Photo of the tire</FieldLabel>
           <PhotoUpload />
         </div>
 

@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { groq } from 'next-sanity';
 import { client } from '../client';
 import { sanityFetch } from '../live';
@@ -23,6 +24,54 @@ const pageProjection = groq`{
     _key,
     _type == "richText" => {
       body
+    },
+    _type == "heroSection" => {
+      eyebrow,
+      headlineMain,
+      headlineAccent,
+      body,
+      trustMarkers[]{ icon, value, label }
+    },
+    _type == "trustBar" => {
+      items[]{ icon, value, label }
+    },
+    _type == "servicesSection" => {
+      eyebrow,
+      heading,
+      services[]{ icon, title, description, price }
+    },
+    _type == "howItWorks" => {
+      eyebrow,
+      heading,
+      steps[]{ title, description }
+    },
+    _type == "reviewsSection" => {
+      eyebrow,
+      heading,
+      rating,
+      reviewCount,
+      quotes[]{ quote, name, city }
+    },
+    _type == "coverageSection" => {
+      eyebrow,
+      heading,
+      body,
+      towns
+    },
+    _type == "depositCallout" => {
+      eyebrow,
+      heading,
+      body,
+      depositAmount,
+      depositLabel,
+      depositNote,
+      reasons[]{ icon, title, description }
+    },
+    _type == "smsBanner" => {
+      headline,
+      body,
+      phoneNumber,
+      phoneDisplay
     }
   }
 }`;
@@ -39,14 +88,14 @@ const allNonHomepageSlugsQuery = groq`
   }
 `;
 
-export async function getHomepage(): Promise<HomepageQueryResult> {
+export const getHomepage = cache(async (): Promise<HomepageQueryResult> => {
   const { data } = await sanityFetch({
     query: homepageQuery,
     params: { id: HOMEPAGE_ID },
     tags: ['websitePage', `websitePage:${HOMEPAGE_ID}`],
   });
   return data;
-}
+});
 
 export async function getWebsitePageBySlug(slug: string): Promise<WebsitePageBySlugQueryResult> {
   const { data } = await sanityFetch({

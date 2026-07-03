@@ -1,11 +1,14 @@
 import { TrustMarker } from '@/components/molecules/TrustMarker';
+import type { HomepageQueryResult } from '@/sanity.types';
+import type { IconName } from '@/components/atoms/Icon';
 import { QuoteForm } from './QuoteForm';
 
-/* RoadReady landing — hero. Headline + subhead + trust markers on the left,
-   the quote form as the visual anchor on the right. Stacks on mobile. */
-export function Hero() {
+type PageSection = NonNullable<NonNullable<HomepageQueryResult>['sections']>[number];
+export type HeroSectionProps = Extract<PageSection, { _type: 'heroSection' }>;
+
+export function Hero({ eyebrow, headlineMain, headlineAccent, body, trustMarkers }: HeroSectionProps) {
   return (
-    <section id="top" className="rr-tread" style={{ position: 'relative', background: 'var(--bg-page)', paddingBottom: 8 }}>
+    <section id="top" aria-labelledby="hero-heading" className="rr-tread" style={{ position: 'relative', background: 'var(--bg-page)', paddingBottom: 8 }}>
       <div
         className="rr-hero-grid"
         style={{
@@ -17,13 +20,16 @@ export function Hero() {
           alignItems: 'start',
         }}
       >
-        {/* Left: message */}
         <div>
-          <div className="rr-eyebrow" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ width: 22, height: 2, background: 'var(--caution-yellow)' }} />
-            Mobile tire &amp; roadside service
-          </div>
+          {eyebrow && (
+            <div className="rr-eyebrow" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ width: 22, height: 2, background: 'var(--caution-yellow)' }} />
+              {eyebrow}
+            </div>
+          )}
+          {(headlineMain || headlineAccent) && (
           <h1
+            id="hero-heading"
             style={{
               margin: '16px 0 0',
               fontFamily: 'var(--font-display)',
@@ -34,22 +40,30 @@ export function Hero() {
               color: 'var(--off-white)',
             }}
           >
-            Flat tire?
-            <br />
-            <span style={{ color: 'var(--signal-orange)' }}>We come to you.</span>
+            {headlineMain}
+            {headlineMain && headlineAccent && <br />}
+            {headlineAccent && <span style={{ color: 'var(--signal-orange)' }}>{headlineAccent}</span>}
           </h1>
-          <p style={{ margin: '18px 0 0', maxWidth: 460, fontSize: 19, fontWeight: 500, color: 'var(--off-white)' }}>
-            We&apos;ll be there in under 35 minutes — or your deposit&apos;s waived. Flat repair, replacement, and roadside help,
-            wherever you&apos;re stuck.
-          </p>
-          <div className="rr-hero-trust" style={{ display: 'flex', flexWrap: 'wrap', gap: 26, marginTop: 26 }}>
-            <TrustMarker icon="map-pin" value="Greater Hartford" label="Service area" />
-            <TrustMarker icon="clock" value="28 min" label="Avg response" />
-            <TrustMarker icon="shield" value="24/7" label="Day or night" />
-          </div>
+          )}
+          {body && (
+            <p style={{ margin: '18px 0 0', maxWidth: 460, fontSize: 19, fontWeight: 500, color: 'var(--off-white)' }}>
+              {body}
+            </p>
+          )}
+          {trustMarkers && trustMarkers.length > 0 && (
+            <div className="rr-hero-trust" style={{ display: 'flex', flexWrap: 'wrap', gap: 26, marginTop: 26 }}>
+              {trustMarkers.map((m, i) => (
+                <TrustMarker
+                  key={i}
+                  icon={m.icon ?? undefined as IconName | undefined}
+                  value={m.value}
+                  label={m.label}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Right: form anchor */}
         <div style={{ position: 'relative' }}>
           <QuoteForm />
         </div>
