@@ -5,6 +5,13 @@ import type { IconName } from '@/components/atoms/Icon';
 type PageSection = NonNullable<NonNullable<HomepageQueryResult>['sections']>[number];
 export type ServicesSectionProps = Extract<PageSection, { _type: 'servicesSection' }>;
 
+const SERVICE_IMAGES = [
+  '/medinas/tire-repair-from-inside-truck.jpg',
+  '/medinas/new-tire-michelling.jpg',
+  '/medinas/tire-with-rim-replacement.jpg',
+  '/medinas/road-side-night-service.jpg',
+];
+
 export function Services({ eyebrow, heading, services }: ServicesSectionProps) {
   return (
     <section id="services" aria-labelledby="services-heading" style={{ background: 'var(--bg-section)', borderTop: '1px solid var(--border-default)' }}>
@@ -31,6 +38,8 @@ export function Services({ eyebrow, heading, services }: ServicesSectionProps) {
               title={s.title}
               description={s.description ?? ''}
               price={s.price ?? undefined}
+              imageSrc={SERVICE_IMAGES[i % SERVICE_IMAGES.length]}
+              imageAlt={s.title}
             />
           ))}
         </div>

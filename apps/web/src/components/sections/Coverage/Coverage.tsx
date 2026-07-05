@@ -1,5 +1,6 @@
 import { Icon } from '@/components/atoms/Icon';
 import type { HomepageQueryResult } from '@/sanity.types';
+import Image from 'next/image';
 
 type PageSection = NonNullable<NonNullable<HomepageQueryResult>['sections']>[number];
 export type CoverageSectionProps = Extract<PageSection, { _type: 'coverageSection' }>;
@@ -65,24 +66,13 @@ export function Coverage({ eyebrow, heading, body, towns }: CoverageSectionProps
               overflow: 'hidden',
             }}
           >
-            <div className="rr-tread" style={{ position: 'absolute', inset: 0, opacity: 0.6 }} />
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span
-                style={{
-                  display: 'flex',
-                  width: 56,
-                  height: 56,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'var(--signal-orange)',
-                  borderRadius: '50%',
-                  color: 'var(--graphite-950)',
-                  boxShadow: 'var(--shadow-cta)',
-                }}
-              >
-                <Icon name="map-pin" size={30} strokeWidth={2.25} />
-              </span>
-            </div>
+            <Image
+              src="/medinas/service-to-home2.jpg"
+              alt="Mobile tire technician on-site in service area"
+              fill
+              sizes="(max-width: 860px) 100vw, 42vw"
+              style={{ objectFit: 'cover' }}
+            />
             <span
               style={{
                 position: 'absolute',

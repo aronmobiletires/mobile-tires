@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { Icon } from '@/components/atoms/Icon';
 
+const DISPATCH_PHONE_HREF = 'tel:+16265887122';
+const DISPATCH_PHONE_LABEL = '(626) 588-7122';
+
 const NAV_LINKS = [
   { label: 'Services', href: '#services' },
   { label: 'How it works', href: '#how-it-works' },
@@ -85,7 +88,7 @@ export function MobileMenu() {
             </a>
           ))}
           <a
-            href="tel:+12035550148"
+            href={DISPATCH_PHONE_HREF}
             style={{
               marginTop: 12,
               display: 'flex',
@@ -98,7 +101,7 @@ export function MobileMenu() {
             }}
           >
             <Icon name="phone" size={20} />
-            (203) 555-0148
+            {DISPATCH_PHONE_LABEL}
           </a>
         </nav>
       )}

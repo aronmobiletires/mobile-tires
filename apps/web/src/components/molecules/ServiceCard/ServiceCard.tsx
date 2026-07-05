@@ -1,6 +1,7 @@
 import type { CSSProperties, HTMLAttributes } from 'react';
 import { Card } from '@/components/atoms/Card';
 import { Icon, type IconName } from '@/components/atoms/Icon';
+import Image from 'next/image';
 
 /* ServiceCard — a service in the services grid. Icon, title, one-line
    description, optional "from $XX" starting price. Corner-bracket framed. */
@@ -9,12 +10,19 @@ type ServiceCardProps = {
   title: string;
   description: string;
   price?: string;
+  imageSrc?: string;
+  imageAlt?: string;
   style?: CSSProperties;
 } & HTMLAttributes<HTMLDivElement>;
 
-export function ServiceCard({ icon, title, description, price, style, ...rest }: ServiceCardProps) {
+export function ServiceCard({ icon, title, description, price, imageSrc, imageAlt, style, ...rest }: ServiceCardProps) {
   return (
     <Card brackets padding={22} style={{ display: 'flex', flexDirection: 'column', gap: 14, ...style }} {...rest}>
+      {imageSrc && (
+        <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', borderRadius: 'var(--radius-sm)', overflow: 'hidden', border: '1px solid var(--border-default)' }}>
+          <Image src={imageSrc} alt={imageAlt ?? title} fill sizes="(max-width: 560px) 100vw, (max-width: 860px) 50vw, 25vw" style={{ objectFit: 'cover' }} />
+        </div>
+      )}
       <span
         style={{
           display: 'flex',

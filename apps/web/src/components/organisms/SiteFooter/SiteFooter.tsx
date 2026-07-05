@@ -1,13 +1,14 @@
 import { Badge } from '@/components/atoms/Badge';
 import { createDocDataAttribute } from '@/lib/sanity/dataAttribute';
 import type { FooterNavigationQueryResult } from '@/sanity.types';
+import Image from 'next/image';
 
 type SiteFooterProps = {
   navigation: FooterNavigationQueryResult;
 };
 
 const COLUMNS = [
-  { h: 'Contact', links: ['(203) 555-0148', 'Text us', 'dispatch@roadready.co'] },
+  { h: 'Contact', links: ['(626) 588-7122', 'Text us', 'medinasmobiletireservice.com'] },
   { h: 'Hours', links: ['Mon–Sun 7am–9pm', 'After-hours: on call', 'Holidays: 24/7'] },
   { h: 'Company', links: ['Services', 'Coverage', 'Fleet accounts', 'Careers'] },
 ];
@@ -25,25 +26,20 @@ export function SiteFooter({ navigation }: SiteFooterProps) {
       <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '48px 20px 32px' }}>
         <div className="rr-footer-grid">
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-              <span
-                style={{
-                  width: 12,
-                  height: 28,
-                  background: 'var(--signal-orange)',
-                  clipPath: 'polygon(30% 0,100% 0,70% 100%,0 100%)',
-                }}
-              />
-              <span style={{ fontFamily: 'var(--font-display)', fontSize: 20, textTransform: 'uppercase', color: 'var(--off-white)' }}>
-                Road<span style={{ color: 'var(--signal-orange)' }}>Ready</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+              <Image src="/medinas/logo.png" alt="Medina's Mobile Tire Service" width={52} height={52} />
+              <span style={{ fontFamily: 'var(--font-condensed)', fontSize: 17, lineHeight: 1.1, color: 'var(--off-white)' }}>
+                Medina&apos;s Mobile
+                <br />
+                Tire Service
               </span>
             </div>
             <p style={{ margin: 0, fontSize: 15, color: 'var(--steel-300)', maxWidth: 280 }}>
-              Mobile tire &amp; roadside service across Greater Hartford. We come to you.
+              Mobile tire &amp; roadside service across Los Angeles and Orange County. We come to you.
             </p>
             <div style={{ marginTop: 16 }}>
               <Badge tone="caution" icon="shield">
-                Licensed &amp; insured · CT #48812
+                Licensed &amp; insured
               </Badge>
             </div>
           </div>
@@ -64,7 +60,19 @@ export function SiteFooter({ navigation }: SiteFooterProps) {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
                 {col.links.map((l) => (
-                  <a key={l} href="#" style={{ fontSize: 15, color: 'var(--steel-300)', textDecoration: 'none' }}>
+                  <a
+                    key={l}
+                    href={
+                      l === '(626) 588-7122'
+                        ? 'tel:+16265887122'
+                        : l === 'Text us'
+                          ? 'sms:+16265887122'
+                          : l === 'medinasmobiletireservice.com'
+                            ? 'https://medinasmobiletireservice.com/'
+                            : '#'
+                    }
+                    style={{ fontSize: 15, color: 'var(--steel-300)', textDecoration: 'none' }}
+                  >
                     {l}
                   </a>
                 ))}
@@ -83,7 +91,7 @@ export function SiteFooter({ navigation }: SiteFooterProps) {
             justifyContent: 'space-between',
           }}
         >
-          <span style={{ fontSize: 13, color: 'var(--steel-500)' }}>© 2026 RoadReady Tire Co. All rights reserved.</span>
+          <span style={{ fontSize: 13, color: 'var(--steel-500)' }}>© 2026 Medina&apos;s Mobile Tire Service. All rights reserved.</span>
           <div style={{ display: 'flex', gap: 20 }}>
             {['Privacy', 'Terms', 'Deposit policy'].map((l) => (
               <a key={l} href="#" style={{ fontSize: 13, color: 'var(--steel-500)', textDecoration: 'none' }}>

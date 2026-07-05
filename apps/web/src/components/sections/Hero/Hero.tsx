@@ -1,6 +1,7 @@
 import { TrustMarker } from '@/components/molecules/TrustMarker';
 import type { HomepageQueryResult } from '@/sanity.types';
 import type { IconName } from '@/components/atoms/Icon';
+import Image from 'next/image';
 import { QuoteForm } from './QuoteForm';
 
 type PageSection = NonNullable<NonNullable<HomepageQueryResult>['sections']>[number];
@@ -64,7 +65,17 @@ export function Hero({ eyebrow, headlineMain, headlineAccent, body, trustMarkers
           )}
         </div>
 
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div className="rr-brackets" style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--border-default)' }}>
+            <Image
+              src="/medinas/service-to-home.jpg"
+              alt="Medina's Mobile Tire Service van working at a customer location"
+              fill
+              priority
+              sizes="(max-width: 860px) 100vw, 44vw"
+              style={{ objectFit: 'cover' }}
+            />
+          </div>
           <QuoteForm />
         </div>
       </div>

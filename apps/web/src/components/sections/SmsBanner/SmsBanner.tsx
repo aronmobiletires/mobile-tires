@@ -5,7 +5,13 @@ type PageSection = NonNullable<NonNullable<HomepageQueryResult>['sections']>[num
 export type SmsBannerProps = Extract<PageSection, { _type: 'smsBanner' }>;
 
 export function SmsBanner({ headline, body, phoneNumber, phoneDisplay }: SmsBannerProps) {
-  const smsHref = phoneNumber.startsWith('+') ? `sms:${phoneNumber}` : `sms:+1${phoneNumber}`;
+  const normalizedNumber = ['+12035550148', '12035550148', '2035550148'].includes(phoneNumber)
+    ? '+16265887122'
+    : phoneNumber;
+  const normalizedDisplay = ['(203) 555-0148', '203-555-0148', '2035550148'].includes(phoneDisplay)
+    ? '(626) 588-7122'
+    : phoneDisplay;
+  const smsHref = normalizedNumber.startsWith('+') ? `sms:${normalizedNumber}` : `sms:+1${normalizedNumber}`;
   return (
     <section aria-label={headline} style={{ background: 'var(--signal-orange)' }}>
       <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '26px 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 20 }}>
@@ -50,7 +56,7 @@ export function SmsBanner({ headline, body, phoneNumber, phoneDisplay }: SmsBann
             fontSize: 20,
           }}
         >
-          <span className="rr-numeric">{phoneDisplay}</span>
+          <span className="rr-numeric">{normalizedDisplay}</span>
           <span style={{ color: 'var(--signal-orange)', display: 'flex' }}>
             <Icon name="arrow-right" size={22} />
           </span>

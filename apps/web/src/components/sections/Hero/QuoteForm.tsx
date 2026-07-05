@@ -215,7 +215,7 @@ export function QuoteForm() {
           </legend>
           <LocationButton
             located={located}
-            address="I-84 W, Exit 17 · Waterbury, CT"
+            address="I-10 E near Hacienda Blvd · La Puente, CA"
             onClick={() => setLocated(!located)}
           />
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0' }}>

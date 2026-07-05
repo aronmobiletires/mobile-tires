@@ -24,8 +24,8 @@ export async function generateMetadata(props: { params: Promise<RouteParams> }):
   if (isHomepageRoute(params.slug)) {
     const page = await getHomepage();
     return {
-      title: page?.seo?.metaTitle ?? 'RoadReady Tire Co. — Mobile tire & roadside service',
-      description: page?.seo?.metaDescription ?? "We'll be there in under 35 minutes or your deposit's waived. Flat repair, tire replacement, and roadside assistance across Greater Hartford.",
+      title: page?.seo?.metaTitle ?? "Medina's Mobile Tire Service — Mobile tire & roadside service",
+      description: page?.seo?.metaDescription ?? 'Fast on-site tire repair, replacement, and emergency roadside tire service across Los Angeles and Orange County.',
       robots: page?.seo?.noIndex ? { index: false, follow: false } : undefined,
     };
   }

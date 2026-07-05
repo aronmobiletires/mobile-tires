@@ -2,7 +2,11 @@ import { Badge } from '@/components/atoms/Badge';
 import { Icon } from '@/components/atoms/Icon';
 import { createDocDataAttribute } from '@/lib/sanity/dataAttribute';
 import type { HeaderNavigationQueryResult } from '@/sanity.types';
+import Image from 'next/image';
 import { MobileMenu } from './MobileMenu';
+
+const DISPATCH_PHONE_HREF = 'tel:+16265887122';
+const DISPATCH_PHONE_LABEL = '(626) 588-7122';
 
 type SiteHeaderProps = {
   navigation: HeaderNavigationQueryResult;
@@ -26,25 +30,12 @@ export function SiteHeader({ navigation }: SiteHeaderProps) {
         borderBottom: '1px solid var(--border-default)',
       }}
     >
-      <a href="#top" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-        <span
-          style={{
-            width: 12,
-            height: 28,
-            background: 'var(--signal-orange)',
-            clipPath: 'polygon(30% 0,100% 0,70% 100%,0 100%)',
-          }}
-        />
-        <span
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 20,
-            textTransform: 'uppercase',
-            letterSpacing: '-0.01em',
-            color: 'var(--off-white)',
-          }}
-        >
-          Road<span style={{ color: 'var(--signal-orange)' }}>Ready</span>
+      <a href="#top" aria-label="Medina's Mobile Tire Service" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+        <Image src="/medinas/logo.png" alt="Medina's Mobile Tire Service" width={52} height={52} priority />
+        <span style={{ fontFamily: 'var(--font-condensed)', fontSize: 17, lineHeight: 1.1, color: 'var(--off-white)' }}>
+          Medina&apos;s Mobile
+          <br />
+          Tire Service
         </span>
       </a>
 
@@ -66,7 +57,7 @@ export function SiteHeader({ navigation }: SiteHeaderProps) {
 
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
         <a
-          href="tel:+12035550148"
+          href={DISPATCH_PHONE_HREF}
           className="rr-desktop-phone"
           style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}
         >
@@ -75,13 +66,13 @@ export function SiteHeader({ navigation }: SiteHeaderProps) {
             className="rr-numeric"
             style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--off-white)' }}
           >
-            (203) 555-0148
+            {DISPATCH_PHONE_LABEL}
           </span>
         </a>
 
         {/* Mobile-only phone link rendered as icon button */}
         <a
-          href="tel:+12035550148"
+          href={DISPATCH_PHONE_HREF}
           aria-label="Call dispatch"
           className="rr-mobile-phone"
           style={{
