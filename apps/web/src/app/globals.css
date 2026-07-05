@@ -341,6 +341,10 @@ a:hover {
   .rr-hero-trust {
     gap: 18px !important;
   }
+  .rr-sms-cta {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* QuoteForm 2-col grid — collapses to 1 col on small phones */
