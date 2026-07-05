@@ -42,7 +42,19 @@ Fill in both files with the real project values. Ask a teammate for the Sanity p
 | `NEXT_PUBLIC_SANITY_API_VERSION` | GROQ API date pin — don't change unless bumping |
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` for local dev |
 | `NEXT_PUBLIC_SANITY_STUDIO_URL` | `http://localhost:3333` for local dev |
-| `SANITY_API_READ_TOKEN` | Viewer-role token — required for draft preview |
+| `SANITY_API_READ_TOKEN` | Viewer-role token — required for draft preview (see below) |
+
+**Generating `SANITY_API_READ_TOKEN`**
+
+1. Go to [sanity.io/manage](https://www.sanity.io/manage) and open the project
+2. Navigate to **API → Tokens**
+3. Click **Add API token**
+4. Name it something like `web-preview-<your-name>` so it's identifiable
+5. Set permissions to **Viewer**
+6. Click **Save** and copy the token immediately — it won't be shown again
+7. Paste it as `SANITY_API_READ_TOKEN` in `apps/web/.env.local`
+
+Each developer should generate their own token. Do not share or commit tokens.
 
 **`apps/studio/.env`**
 
