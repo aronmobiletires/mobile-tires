@@ -78,7 +78,7 @@ export function DepositCallout({ eyebrow, heading, body, depositAmount, depositL
                 {depositLabel}
               </div>
             )}
-            <div className="rr-numeric" style={{ fontFamily: 'var(--font-display)', fontSize: 84, lineHeight: 1, color: 'var(--caution-yellow)', margin: '8px 0' }}>
+            <div className="rr-numeric" style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(56px, 12vw, 84px)', lineHeight: 1, color: 'var(--caution-yellow)', margin: '8px 0' }}>
               {depositAmount}
             </div>
             {depositNote && (

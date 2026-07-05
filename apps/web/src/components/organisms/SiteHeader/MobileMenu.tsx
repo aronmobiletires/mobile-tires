@@ -6,14 +6,17 @@ import { Icon } from '@/components/atoms/Icon';
 const DISPATCH_PHONE_HREF = 'tel:+16265887122';
 const DISPATCH_PHONE_LABEL = '(626) 588-7122';
 
-const NAV_LINKS = [
-  { label: 'Services', href: '#services' },
-  { label: 'How it works', href: '#how-it-works' },
-  { label: 'Coverage', href: '#coverage' },
-  { label: 'Reviews', href: '#reviews' },
-];
+type NavLink = {
+  label: string;
+  href: string | null;
+  openInNewTab: boolean | null;
+};
 
-export function MobileMenu() {
+type MobileMenuProps = {
+  links: NavLink[];
+};
+
+export function MobileMenu({ links }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -69,10 +72,12 @@ export function MobileMenu() {
             zIndex: 19,
           }}
         >
-          {NAV_LINKS.map(({ label, href }) => (
+          {links.map(({ label, href, openInNewTab }) => (
             <a
-              key={label}
-              href={href}
+              key={href ?? label}
+              href={href ?? '#'}
+              target={openInNewTab ? '_blank' : undefined}
+              rel={openInNewTab ? 'noopener noreferrer' : undefined}
               onClick={() => setOpen(false)}
               style={{
                 fontFamily: 'var(--font-body)',

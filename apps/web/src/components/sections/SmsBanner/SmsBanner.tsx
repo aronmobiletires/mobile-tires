@@ -42,6 +42,7 @@ export function SmsBanner({ headline, body, phoneNumber, phoneDisplay }: SmsBann
         </div>
         <a
           href={smsHref}
+          className="rr-sms-cta"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
