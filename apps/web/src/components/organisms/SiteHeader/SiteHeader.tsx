@@ -8,11 +8,21 @@ import { MobileMenu } from './MobileMenu';
 const DISPATCH_PHONE_HREF = 'tel:+16265887122';
 const DISPATCH_PHONE_LABEL = '(626) 588-7122';
 
+const FALLBACK_LINKS = [
+  { label: 'Services', href: '#services', openInNewTab: false },
+  { label: 'How it works', href: '#how-it-works', openInNewTab: false },
+  { label: 'Coverage', href: '#coverage', openInNewTab: false },
+  { label: 'Reviews', href: '#reviews', openInNewTab: false },
+];
+
 type SiteHeaderProps = {
   navigation: HeaderNavigationQueryResult;
 };
 
 export function SiteHeader({ navigation }: SiteHeaderProps) {
+  const sanityLinks = navigation?.links ?? [];
+  const navLinks = sanityLinks.length > 0 ? sanityLinks : FALLBACK_LINKS;
+
   return (
     <header
       data-component="site-header"
@@ -44,13 +54,15 @@ export function SiteHeader({ navigation }: SiteHeaderProps) {
         aria-label="Main navigation"
         style={{ display: 'flex', gap: 22, marginLeft: 20 }}
       >
-        {['Services', 'How it works', 'Coverage', 'Reviews'].map((l) => (
+        {navLinks.map((link) => (
           <a
-            key={l}
-            href={`#${l.toLowerCase().replace(/\s+/g, '-')}`}
+            key={link.href ?? link.label}
+            href={link.href ?? '#'}
+            target={link.openInNewTab ? '_blank' : undefined}
+            rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
             style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 500, color: 'var(--steel-300)' }}
           >
-            {l}
+            {link.label}
           </a>
         ))}
       </nav>
@@ -90,7 +102,7 @@ export function SiteHeader({ navigation }: SiteHeaderProps) {
         </a>
 
         <div className="rr-mobile-menu-wrapper" style={{ display: 'none' }}>
-          <MobileMenu />
+          <MobileMenu links={navLinks} />
         </div>
       </div>
     </header>

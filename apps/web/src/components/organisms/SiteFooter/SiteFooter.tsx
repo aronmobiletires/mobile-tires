@@ -7,16 +7,46 @@ type SiteFooterProps = {
   navigation: FooterNavigationQueryResult;
 };
 
-const COLUMNS = [
-  { h: 'Contact', links: ['(626) 588-7122', 'Text us', 'medinasmobiletireservice.com'] },
-  { h: 'Hours', links: ['Mon–Sun 7am–9pm', 'After-hours: on call', 'Holidays: 24/7'] },
-  { h: 'Company', links: ['Services', 'Coverage', 'Fleet accounts', 'Careers'] },
+const FALLBACK_COLUMNS = [
+  {
+    _key: 'contact',
+    heading: 'Contact',
+    links: [
+      { label: '(626) 588-7122', href: 'tel:+16265887122', openInNewTab: false },
+      { label: 'Text us', href: 'sms:+16265887122', openInNewTab: false },
+      { label: 'medinasmobiletireservice.com', href: 'https://medinasmobiletireservice.com/', openInNewTab: true },
+    ],
+  },
+  {
+    _key: 'hours',
+    heading: 'Hours',
+    links: [
+      { label: 'Mon–Sun 7am–9pm', href: null, openInNewTab: false },
+      { label: 'After-hours: on call', href: null, openInNewTab: false },
+      { label: 'Holidays: 24/7', href: null, openInNewTab: false },
+    ],
+  },
+  {
+    _key: 'company',
+    heading: 'Company',
+    links: [
+      { label: 'Services', href: '#services', openInNewTab: false },
+      { label: 'Coverage', href: '#coverage', openInNewTab: false },
+      { label: 'Fleet accounts', href: null, openInNewTab: false },
+      { label: 'Careers', href: null, openInNewTab: false },
+    ],
+  },
 ];
 
-// RoadReady site footer — hardcoded for now (see landing-page-design-brief.md);
-// `navigation` is threaded through and tagged for Sanity's Presentation tool
-// so columns/copyright can move to editable content later.
+const FALLBACK_COPYRIGHT = `© ${new Date().getFullYear()} Medina's Mobile Tire Service. All rights reserved.`;
+
 export function SiteFooter({ navigation }: SiteFooterProps) {
+  const sanityColumns = navigation?.columns ?? [];
+  const columns = sanityColumns.length > 0 ? sanityColumns : FALLBACK_COLUMNS;
+  const copyright = navigation?.copyright
+    ? navigation.copyright.replace('{year}', new Date().getFullYear().toString())
+    : FALLBACK_COPYRIGHT;
+
   return (
     <footer
       data-component="site-footer"
@@ -43,8 +73,8 @@ export function SiteFooter({ navigation }: SiteFooterProps) {
               </Badge>
             </div>
           </div>
-          {COLUMNS.map((col) => (
-            <div key={col.h}>
+          {columns.map((col) => (
+            <div key={col._key}>
               <div
                 style={{
                   fontFamily: 'var(--font-condensed)',
@@ -56,26 +86,26 @@ export function SiteFooter({ navigation }: SiteFooterProps) {
                   marginBottom: 12,
                 }}
               >
-                {col.h}
+                {col.heading}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
-                {col.links.map((l) => (
-                  <a
-                    key={l}
-                    href={
-                      l === '(626) 588-7122'
-                        ? 'tel:+16265887122'
-                        : l === 'Text us'
-                          ? 'sms:+16265887122'
-                          : l === 'medinasmobiletireservice.com'
-                            ? 'https://medinasmobiletireservice.com/'
-                            : '#'
-                    }
-                    style={{ fontSize: 15, color: 'var(--steel-300)', textDecoration: 'none' }}
-                  >
-                    {l}
-                  </a>
-                ))}
+                {(col.links ?? []).map((link) =>
+                  link.href ? (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      target={link.openInNewTab ? '_blank' : undefined}
+                      rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+                      style={{ fontSize: 15, color: 'var(--steel-300)', textDecoration: 'none' }}
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <span key={link.label} style={{ fontSize: 15, color: 'var(--steel-300)' }}>
+                      {link.label}
+                    </span>
+                  )
+                )}
               </div>
             </div>
           ))}
@@ -91,7 +121,7 @@ export function SiteFooter({ navigation }: SiteFooterProps) {
             justifyContent: 'space-between',
           }}
         >
-          <span style={{ fontSize: 13, color: 'var(--steel-500)' }}>© 2026 Medina&apos;s Mobile Tire Service. All rights reserved.</span>
+          <span style={{ fontSize: 13, color: 'var(--steel-500)' }}>{copyright}</span>
           <div style={{ display: 'flex', gap: 20 }}>
             {['Privacy', 'Terms', 'Deposit policy'].map((l) => (
               <a key={l} href="#" style={{ fontSize: 13, color: 'var(--steel-500)', textDecoration: 'none' }}>
