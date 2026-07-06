@@ -3,6 +3,7 @@ import {
   CogIcon,
   ComposeIcon,
   DocumentsIcon,
+  EditIcon,
   HomeIcon,
   MasterDetailIcon,
   MenuIcon,
@@ -48,6 +49,16 @@ export const structure: StructureResolver = (S) =>
                     .params({ singletons: SINGLETON_ID_LIST }),
                 ),
             ]),
+        ),
+      S.divider(),
+      S.listItem()
+        .title('Blog Posts')
+        .icon(EditIcon)
+        .schemaType('blogPost')
+        .child(
+          S.documentTypeList('blogPost')
+            .title('Blog Posts')
+            .defaultOrdering([{ field: 'publishedAt', direction: 'desc' }]),
         ),
       S.divider(),
       S.listItem()
