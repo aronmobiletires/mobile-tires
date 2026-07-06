@@ -302,6 +302,7 @@ export type SiteSettings = {
   };
   organizationLegalName?: string;
   organizationUrl?: string;
+  blogEnabled?: boolean;
 };
 
 export type SanityImageCrop = {
@@ -318,6 +319,51 @@ export type SanityImageHotspot = {
   y: number;
   height: number;
   width: number;
+};
+
+export type BlogPost = {
+  _id: string;
+  _type: 'blogPost';
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title: string;
+  slug: Slug;
+  excerpt: string;
+  coverImage: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt: string;
+    _type: 'image';
+  };
+  publishedAt: string;
+  body: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: 'span';
+      _key: string;
+    }>;
+    style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote';
+    listItem?: 'bullet' | 'number';
+    markDefs?: Array<{
+      href?: string;
+      _type: 'link';
+      _key: string;
+    }>;
+    level?: number;
+    _type: 'block';
+    _key: string;
+  }>;
+  seo?: Seo;
+};
+
+export type Slug = {
+  _type: 'slug';
+  current: string;
+  source?: string;
 };
 
 export type WebsitePage = {
@@ -359,12 +405,6 @@ export type WebsitePage = {
   >;
   pageSettings?: PageSettings;
   seo?: Seo;
-};
-
-export type Slug = {
-  _type: 'slug';
-  current: string;
-  source?: string;
 };
 
 export type SanityImagePaletteSwatch = {
@@ -485,8 +525,9 @@ export type AllSanitySchemaTypes =
   | SiteSettings
   | SanityImageCrop
   | SanityImageHotspot
-  | WebsitePage
+  | BlogPost
   | Slug
+  | WebsitePage
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
@@ -495,6 +536,85 @@ export type AllSanitySchemaTypes =
   | SanityAssetSourceData
   | SanityImageAsset
   | Geopoint;
+
+// Source: ../web/src/lib/sanity/queries/blog.ts
+// Variable: allBlogPostsQuery
+// Query: *[_type == "blogPost" && defined(slug.current)] | order(publishedAt desc) {    _id,    _type,    title,    "slug": slug.current,    excerpt,    coverImage,    publishedAt  }
+export type AllBlogPostsQueryResult = Array<{
+  _id: string;
+  _type: 'blogPost';
+  title: string;
+  slug: string;
+  excerpt: string;
+  coverImage: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt: string;
+    _type: 'image';
+  };
+  publishedAt: string;
+}>;
+
+// Source: ../web/src/lib/sanity/queries/blog.ts
+// Variable: blogPostBySlugQuery
+// Query: *[_type == "blogPost" && slug.current == $slug][0]{    _id,    _type,    title,    "slug": slug.current,    excerpt,    coverImage,    publishedAt,    body,    seo  }
+export type BlogPostBySlugQueryResult = {
+  _id: string;
+  _type: 'blogPost';
+  title: string;
+  slug: string;
+  excerpt: string;
+  coverImage: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt: string;
+    _type: 'image';
+  };
+  publishedAt: string;
+  body: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: 'span';
+      _key: string;
+    }>;
+    style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal';
+    listItem?: 'bullet' | 'number';
+    markDefs?: Array<{
+      href?: string;
+      _type: 'link';
+      _key: string;
+    }>;
+    level?: number;
+    _type: 'block';
+    _key: string;
+  }>;
+  seo: Seo | null;
+} | null;
+
+// Source: ../web/src/lib/sanity/queries/blog.ts
+// Variable: allBlogPostSlugsQuery
+// Query: *[_type == "blogPost" && defined(slug.current)]{    "slug": slug.current  }
+export type AllBlogPostSlugsQueryResult = Array<{
+  slug: string;
+}>;
+
+// Source: ../web/src/lib/sanity/queries/blog.ts
+// Variable: blogPostsForSitemapQuery
+// Query: *[_type == "blogPost" && defined(slug.current) && defined(publishedAt) && seo.noIndex != true]    | order(_updatedAt desc) {    "slug": slug.current,    "lastModified": _updatedAt  }
+export type BlogPostsForSitemapQueryResult = Array<{
+  slug: string;
+  lastModified: string;
+}>;
+
+// Source: ../web/src/lib/sanity/queries/blog.ts
+// Variable: blogEnabledQuery
+// Query: *[_id == $id && _type == "siteSettings"][0].blogEnabled
+export type BlogEnabledQueryResult = boolean | null;
 
 // Source: ../web/src/lib/sanity/queries/global.ts
 // Variable: linkProjection
@@ -508,7 +628,7 @@ export type LinkProjectionResult = {
 
 // Source: ../web/src/lib/sanity/queries/global.ts
 // Variable: siteSettingsQuery
-// Query: *[_id == $id && _type == "siteSettings"][0]{  _id,  _type,  siteName,  siteDescription,  defaultOpenGraphImage,  organizationLegalName,  organizationUrl}
+// Query: *[_id == $id && _type == "siteSettings"][0]{  _id,  _type,  siteName,  siteDescription,  defaultOpenGraphImage,  organizationLegalName,  organizationUrl,  blogEnabled}
 export type SiteSettingsQueryResult = {
   _id: string;
   _type: 'siteSettings';
@@ -523,6 +643,7 @@ export type SiteSettingsQueryResult = {
   } | null;
   organizationLegalName: string | null;
   organizationUrl: string | null;
+  blogEnabled: boolean | null;
 } | null;
 
 // Source: ../web/src/lib/sanity/queries/global.ts
@@ -559,6 +680,33 @@ export type FooterNavigationQueryResult = {
   }> | null;
   copyright: string | null;
 } | null;
+
+// Source: ../web/src/lib/sanity/queries/llms.ts
+// Variable: siteSettingsForLlmsQuery
+// Query: *[_id == $id && _type == "siteSettings"][0]{  siteName,  siteDescription,  blogEnabled}
+export type SiteSettingsForLlmsQueryResult = {
+  siteName: string;
+  siteDescription: string | null;
+  blogEnabled: boolean | null;
+} | null;
+
+// Source: ../web/src/lib/sanity/queries/llms.ts
+// Variable: pagesForLlmsQuery
+// Query: *[_type == "websitePage" && defined(slug.current) && seo.noIndex != true]{    title,    "slug": slug.current,    "isHomepage": _id == $homepageId  }
+export type PagesForLlmsQueryResult = Array<{
+  title: string;
+  slug: string;
+  isHomepage: boolean;
+}>;
+
+// Source: ../web/src/lib/sanity/queries/llms.ts
+// Variable: blogPostsForLlmsQuery
+// Query: *[_type == "blogPost" && defined(slug.current) && seo.noIndex != true]    | order(publishedAt desc) {    title,    "slug": slug.current,    excerpt  }
+export type BlogPostsForLlmsQueryResult = Array<{
+  title: string;
+  slug: string;
+  excerpt: string;
+}>;
 
 // Source: ../web/src/lib/sanity/queries/page.ts
 // Variable: pageProjection
@@ -978,10 +1126,18 @@ export type AllRedirectsQueryResult = Array<{
 import '@sanity/client';
 declare module '@sanity/client' {
   interface SanityQueries {
+    '\n  *[_type == "blogPost" && defined(slug.current)] | order(publishedAt desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    excerpt,\n    coverImage,\n    publishedAt\n  }\n': AllBlogPostsQueryResult;
+    '\n  *[_type == "blogPost" && slug.current == $slug][0]{\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    excerpt,\n    coverImage,\n    publishedAt,\n    body,\n    seo\n  }\n': BlogPostBySlugQueryResult;
+    '\n  *[_type == "blogPost" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': AllBlogPostSlugsQueryResult;
+    '\n  *[_type == "blogPost" && defined(slug.current) && defined(publishedAt) && seo.noIndex != true]\n    | order(_updatedAt desc) {\n    "slug": slug.current,\n    "lastModified": _updatedAt\n  }\n': BlogPostsForSitemapQueryResult;
+    '*[_id == $id && _type == "siteSettings"][0].blogEnabled': BlogEnabledQueryResult;
     '{\n  label,\n  linkType,\n  openInNewTab,\n  "href": select(\n    linkType == "external" => externalUrl,\n    linkType == "internal" => "/" + internalReference->slug.current,\n    null\n  )\n}': LinkProjectionResult;
-    '*[_id == $id && _type == "siteSettings"][0]{\n  _id,\n  _type,\n  siteName,\n  siteDescription,\n  defaultOpenGraphImage,\n  organizationLegalName,\n  organizationUrl\n}': SiteSettingsQueryResult;
+    '*[_id == $id && _type == "siteSettings"][0]{\n  _id,\n  _type,\n  siteName,\n  siteDescription,\n  defaultOpenGraphImage,\n  organizationLegalName,\n  organizationUrl,\n  blogEnabled\n}': SiteSettingsQueryResult;
     '*[_id == $id && _type == "headerNavigation"][0]{\n  _id,\n  _type,\n  title,\n  links[]{\n  label,\n  linkType,\n  openInNewTab,\n  "href": select(\n    linkType == "external" => externalUrl,\n    linkType == "internal" => "/" + internalReference->slug.current,\n    null\n  )\n}\n}': HeaderNavigationQueryResult;
     '*[_id == $id && _type == "footerNavigation"][0]{\n  _id,\n  _type,\n  title,\n  columns[]{\n    _key,\n    heading,\n    links[]{\n  label,\n  linkType,\n  openInNewTab,\n  "href": select(\n    linkType == "external" => externalUrl,\n    linkType == "internal" => "/" + internalReference->slug.current,\n    null\n  )\n}\n  },\n  copyright\n}': FooterNavigationQueryResult;
+    '*[_id == $id && _type == "siteSettings"][0]{\n  siteName,\n  siteDescription,\n  blogEnabled\n}': SiteSettingsForLlmsQueryResult;
+    '\n  *[_type == "websitePage" && defined(slug.current) && seo.noIndex != true]{\n    title,\n    "slug": slug.current,\n    "isHomepage": _id == $homepageId\n  }\n': PagesForLlmsQueryResult;
+    '\n  *[_type == "blogPost" && defined(slug.current) && seo.noIndex != true]\n    | order(publishedAt desc) {\n    title,\n    "slug": slug.current,\n    excerpt\n  }\n': BlogPostsForLlmsQueryResult;
     '{\n  _id,\n  _type,\n  title,\n  "slug": slug.current,\n  seo,\n  pageSettings,\n  sections[]{\n    _type,\n    _key,\n    _type == "richText" => {\n      body\n    },\n    _type == "heroSection" => {\n      eyebrow,\n      headlineMain,\n      headlineAccent,\n      body,\n      trustMarkers[]{ icon, value, label }\n    },\n    _type == "trustBar" => {\n      items[]{ icon, value, label }\n    },\n    _type == "servicesSection" => {\n      eyebrow,\n      heading,\n      services[]{ icon, title, description, price }\n    },\n    _type == "howItWorks" => {\n      eyebrow,\n      heading,\n      steps[]{ title, description }\n    },\n    _type == "reviewsSection" => {\n      eyebrow,\n      heading,\n      rating,\n      reviewCount,\n      quotes[]{ quote, name, city }\n    },\n    _type == "coverageSection" => {\n      eyebrow,\n      heading,\n      body,\n      towns\n    },\n    _type == "depositCallout" => {\n      eyebrow,\n      heading,\n      body,\n      depositAmount,\n      depositLabel,\n      depositNote,\n      reasons[]{ icon, title, description }\n    },\n    _type == "smsBanner" => {\n      headline,\n      body,\n      phoneNumber,\n      phoneDisplay\n    }\n  }\n}': PageProjectionResult;
     '*[_id == $id && _type == "websitePage"][0]{\n  _id,\n  _type,\n  title,\n  "slug": slug.current,\n  seo,\n  pageSettings,\n  sections[]{\n    _type,\n    _key,\n    _type == "richText" => {\n      body\n    },\n    _type == "heroSection" => {\n      eyebrow,\n      headlineMain,\n      headlineAccent,\n      body,\n      trustMarkers[]{ icon, value, label }\n    },\n    _type == "trustBar" => {\n      items[]{ icon, value, label }\n    },\n    _type == "servicesSection" => {\n      eyebrow,\n      heading,\n      services[]{ icon, title, description, price }\n    },\n    _type == "howItWorks" => {\n      eyebrow,\n      heading,\n      steps[]{ title, description }\n    },\n    _type == "reviewsSection" => {\n      eyebrow,\n      heading,\n      rating,\n      reviewCount,\n      quotes[]{ quote, name, city }\n    },\n    _type == "coverageSection" => {\n      eyebrow,\n      heading,\n      body,\n      towns\n    },\n    _type == "depositCallout" => {\n      eyebrow,\n      heading,\n      body,\n      depositAmount,\n      depositLabel,\n      depositNote,\n      reasons[]{ icon, title, description }\n    },\n    _type == "smsBanner" => {\n      headline,\n      body,\n      phoneNumber,\n      phoneDisplay\n    }\n  }\n}': HomepageQueryResult;
     '\n  *[_type == "websitePage" && slug.current == $slug && _id != $homepageId][0]{\n  _id,\n  _type,\n  title,\n  "slug": slug.current,\n  seo,\n  pageSettings,\n  sections[]{\n    _type,\n    _key,\n    _type == "richText" => {\n      body\n    },\n    _type == "heroSection" => {\n      eyebrow,\n      headlineMain,\n      headlineAccent,\n      body,\n      trustMarkers[]{ icon, value, label }\n    },\n    _type == "trustBar" => {\n      items[]{ icon, value, label }\n    },\n    _type == "servicesSection" => {\n      eyebrow,\n      heading,\n      services[]{ icon, title, description, price }\n    },\n    _type == "howItWorks" => {\n      eyebrow,\n      heading,\n      steps[]{ title, description }\n    },\n    _type == "reviewsSection" => {\n      eyebrow,\n      heading,\n      rating,\n      reviewCount,\n      quotes[]{ quote, name, city }\n    },\n    _type == "coverageSection" => {\n      eyebrow,\n      heading,\n      body,\n      towns\n    },\n    _type == "depositCallout" => {\n      eyebrow,\n      heading,\n      body,\n      depositAmount,\n      depositLabel,\n      depositNote,\n      reasons[]{ icon, title, description }\n    },\n    _type == "smsBanner" => {\n      headline,\n      body,\n      phoneNumber,\n      phoneDisplay\n    }\n  }\n}\n': WebsitePageBySlugQueryResult;

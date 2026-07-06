@@ -29,7 +29,8 @@ const siteSettingsQuery = groq`*[_id == $id && _type == "siteSettings"][0]{
   siteDescription,
   defaultOpenGraphImage,
   organizationLegalName,
-  organizationUrl
+  organizationUrl,
+  blogEnabled
 }`;
 
 const headerNavigationQuery = groq`*[_id == $id && _type == "headerNavigation"][0]{

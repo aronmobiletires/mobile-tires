@@ -1,5 +1,6 @@
 import { Badge } from '@/components/atoms/Badge';
 import { createDocDataAttribute } from '@/lib/sanity/dataAttribute';
+import { resolveNavHref } from '@/lib/nav';
 import type { FooterNavigationQueryResult } from '@/sanity.types';
 import Image from 'next/image';
 
@@ -30,8 +31,8 @@ const FALLBACK_COLUMNS = [
     _key: 'company',
     heading: 'Company',
     links: [
-      { label: 'Services', href: '#services', openInNewTab: false },
-      { label: 'Coverage', href: '#coverage', openInNewTab: false },
+      { label: 'Services', href: '/#services', openInNewTab: false },
+      { label: 'Coverage', href: '/#coverage', openInNewTab: false },
       { label: 'Fleet accounts', href: null, openInNewTab: false },
       { label: 'Careers', href: null, openInNewTab: false },
     ],
@@ -75,7 +76,7 @@ export function SiteFooter({ navigation }: SiteFooterProps) {
           </div>
           {columns.map((col) => (
             <div key={col._key}>
-              <div
+              <h3
                 style={{
                   fontFamily: 'var(--font-condensed)',
                   fontWeight: 700,
@@ -83,17 +84,17 @@ export function SiteFooter({ navigation }: SiteFooterProps) {
                   textTransform: 'uppercase',
                   letterSpacing: '0.1em',
                   color: 'var(--steel-500)',
-                  marginBottom: 12,
+                  margin: '0 0 12px',
                 }}
               >
                 {col.heading}
-              </div>
+              </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
                 {(col.links ?? []).map((link) =>
                   link.href ? (
                     <a
-                      key={link.href}
-                      href={link.href}
+                      key={link.label}
+                      href={resolveNavHref(link.href)}
                       target={link.openInNewTab ? '_blank' : undefined}
                       rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
                       style={{ fontSize: 15, color: 'var(--steel-300)', textDecoration: 'none' }}

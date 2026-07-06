@@ -43,15 +43,28 @@ export const link = defineType({
     defineField({
       name: 'externalUrl',
       title: 'External URL',
-      type: 'url',
+      // Plain string, not `url`: the url type's intrinsic validation rejects
+      // site-relative paths (/blog) and anchors (#services), which the
+      // frontend supports.
+      type: 'string',
+      description: 'Full URL (https://…), site-relative path (/blog), or anchor (#services).',
       hidden: ({ parent }) => parent?.linkType !== 'external',
       validation: (Rule) =>
         Rule.custom((value, context) => {
           const parent = context.parent as { linkType?: string } | undefined;
-          if (parent?.linkType === 'external' && !value) {
-            return 'Enter the full URL (https://…).';
+          if (parent?.linkType !== 'external') return true;
+          if (!value) {
+            return 'Enter a full URL (https://…), a relative path (/page), or an anchor (#section).';
           }
-          return true;
+          if (value.startsWith('/') || value.startsWith('#')) return true;
+          try {
+            const protocol = new URL(value).protocol;
+            return ['http:', 'https:', 'mailto:', 'tel:'].includes(protocol)
+              ? true
+              : 'Only http(s), mailto: or tel: URLs are allowed.';
+          } catch {
+            return 'Enter a full URL (https://…), a relative path (/page), or an anchor (#section).';
+          }
         }),
     }),
     defineField({
