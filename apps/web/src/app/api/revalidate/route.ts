@@ -9,6 +9,7 @@ const TYPE_TO_TAGS: Record<string, string[]> = {
   siteSettings: ['siteSettings'],
   headerNavigation: ['headerNavigation'],
   footerNavigation: ['footerNavigation'],
+  blogPost: ['blogPost'],
 };
 
 export async function POST(req: NextRequest) {
@@ -23,11 +24,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Invalid signature' }, { status: 401 });
   }
 
-  const { _type, _id, slug } = JSON.parse(body) as {
-    _type: string;
-    _id: string;
-    slug?: { current?: string };
-  };
+  let _type: string;
+  let _id: string;
+  let slug: { current?: string } | undefined;
+  try {
+    ({ _type, _id, slug } = JSON.parse(body) as {
+      _type: string;
+      _id: string;
+      slug?: { current?: string };
+    });
+  } catch {
+    return NextResponse.json({ message: 'Invalid JSON payload' }, { status: 400 });
+  }
 
   const tags = TYPE_TO_TAGS[_type];
 
@@ -44,6 +52,13 @@ export async function POST(req: NextRequest) {
     revalidateTag(`websitePage:${_id}`);
     if (slug?.current) {
       revalidateTag(`websitePage:slug:${slug.current}`);
+    }
+  }
+
+  if (_type === 'blogPost') {
+    revalidateTag(`blogPost:${_id}`);
+    if (slug?.current) {
+      revalidateTag(`blogPost:slug:${slug.current}`);
     }
   }
 
