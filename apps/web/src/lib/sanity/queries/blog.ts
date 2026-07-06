@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { groq } from 'next-sanity';
 import { client } from '../client';
 import { sanityFetch } from '../live';
@@ -43,8 +44,8 @@ const allBlogPostSlugsQuery = groq`
 `;
 
 const blogPostsForSitemapQuery = groq`
-  *[_type == "blogPost" && defined(slug.current) && seo.noIndex != true]
-    | order(publishedAt desc) {
+  *[_type == "blogPost" && defined(slug.current) && defined(publishedAt) && seo.noIndex != true]
+    | order(_updatedAt desc) {
     "slug": slug.current,
     "lastModified": _updatedAt
   }
@@ -60,14 +61,18 @@ export async function getAllBlogPosts(): Promise<AllBlogPostsQueryResult> {
   return data;
 }
 
-export async function getBlogPostBySlug(slug: string): Promise<BlogPostBySlugQueryResult> {
-  const { data } = await sanityFetch({
-    query: blogPostBySlugQuery,
-    params: { slug },
-    tags: ['blogPost', `blogPost:slug:${slug}`],
-  });
-  return data;
-}
+// Wrapped in cache() so generateMetadata and the page component share one
+// fetch per request instead of relying on sanityFetch's internal dedup.
+export const getBlogPostBySlug = cache(
+  async (slug: string): Promise<BlogPostBySlugQueryResult> => {
+    const { data } = await sanityFetch({
+      query: blogPostBySlugQuery,
+      params: { slug },
+      tags: ['blogPost', `blogPost:slug:${slug}`],
+    });
+    return data;
+  },
+);
 
 // Note: uses raw `client.fetch` (not `sanityFetch`) because this runs inside
 // generateStaticParams, which has no request context — `draftMode()` would throw.

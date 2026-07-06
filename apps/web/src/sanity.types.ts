@@ -605,7 +605,7 @@ export type AllBlogPostSlugsQueryResult = Array<{
 
 // Source: ../web/src/lib/sanity/queries/blog.ts
 // Variable: blogPostsForSitemapQuery
-// Query: *[_type == "blogPost" && defined(slug.current) && seo.noIndex != true]    | order(publishedAt desc) {    "slug": slug.current,    "lastModified": _updatedAt  }
+// Query: *[_type == "blogPost" && defined(slug.current) && defined(publishedAt) && seo.noIndex != true]    | order(_updatedAt desc) {    "slug": slug.current,    "lastModified": _updatedAt  }
 export type BlogPostsForSitemapQueryResult = Array<{
   slug: string;
   lastModified: string;
@@ -1102,7 +1102,7 @@ declare module '@sanity/client' {
     '\n  *[_type == "blogPost" && defined(slug.current)] | order(publishedAt desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    excerpt,\n    coverImage,\n    publishedAt\n  }\n': AllBlogPostsQueryResult;
     '\n  *[_type == "blogPost" && slug.current == $slug][0]{\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    excerpt,\n    coverImage,\n    publishedAt,\n    body,\n    seo\n  }\n': BlogPostBySlugQueryResult;
     '\n  *[_type == "blogPost" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': AllBlogPostSlugsQueryResult;
-    '\n  *[_type == "blogPost" && defined(slug.current) && seo.noIndex != true]\n    | order(publishedAt desc) {\n    "slug": slug.current,\n    "lastModified": _updatedAt\n  }\n': BlogPostsForSitemapQueryResult;
+    '\n  *[_type == "blogPost" && defined(slug.current) && defined(publishedAt) && seo.noIndex != true]\n    | order(_updatedAt desc) {\n    "slug": slug.current,\n    "lastModified": _updatedAt\n  }\n': BlogPostsForSitemapQueryResult;
     '*[_id == $id && _type == "siteSettings"][0].blogEnabled': BlogEnabledQueryResult;
     '{\n  label,\n  linkType,\n  openInNewTab,\n  "href": select(\n    linkType == "external" => externalUrl,\n    linkType == "internal" => "/" + internalReference->slug.current,\n    null\n  )\n}': LinkProjectionResult;
     '*[_id == $id && _type == "siteSettings"][0]{\n  _id,\n  _type,\n  siteName,\n  siteDescription,\n  defaultOpenGraphImage,\n  organizationLegalName,\n  organizationUrl,\n  blogEnabled\n}': SiteSettingsQueryResult;
