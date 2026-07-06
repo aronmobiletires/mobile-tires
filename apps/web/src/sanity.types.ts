@@ -537,6 +537,85 @@ export type AllSanitySchemaTypes =
   | SanityImageAsset
   | Geopoint;
 
+// Source: ../web/src/lib/sanity/queries/blog.ts
+// Variable: allBlogPostsQuery
+// Query: *[_type == "blogPost" && defined(slug.current)] | order(publishedAt desc) {    _id,    _type,    title,    "slug": slug.current,    excerpt,    coverImage,    publishedAt  }
+export type AllBlogPostsQueryResult = Array<{
+  _id: string;
+  _type: 'blogPost';
+  title: string;
+  slug: string;
+  excerpt: string;
+  coverImage: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt: string;
+    _type: 'image';
+  };
+  publishedAt: string;
+}>;
+
+// Source: ../web/src/lib/sanity/queries/blog.ts
+// Variable: blogPostBySlugQuery
+// Query: *[_type == "blogPost" && slug.current == $slug][0]{    _id,    _type,    title,    "slug": slug.current,    excerpt,    coverImage,    publishedAt,    body,    seo  }
+export type BlogPostBySlugQueryResult = {
+  _id: string;
+  _type: 'blogPost';
+  title: string;
+  slug: string;
+  excerpt: string;
+  coverImage: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    alt: string;
+    _type: 'image';
+  };
+  publishedAt: string;
+  body: Array<{
+    children?: Array<{
+      marks?: Array<string>;
+      text?: string;
+      _type: 'span';
+      _key: string;
+    }>;
+    style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal';
+    listItem?: 'bullet' | 'number';
+    markDefs?: Array<{
+      href?: string;
+      _type: 'link';
+      _key: string;
+    }>;
+    level?: number;
+    _type: 'block';
+    _key: string;
+  }>;
+  seo: Seo | null;
+} | null;
+
+// Source: ../web/src/lib/sanity/queries/blog.ts
+// Variable: allBlogPostSlugsQuery
+// Query: *[_type == "blogPost" && defined(slug.current)]{    "slug": slug.current  }
+export type AllBlogPostSlugsQueryResult = Array<{
+  slug: string;
+}>;
+
+// Source: ../web/src/lib/sanity/queries/blog.ts
+// Variable: blogPostsForSitemapQuery
+// Query: *[_type == "blogPost" && defined(slug.current) && seo.noIndex != true]    | order(publishedAt desc) {    "slug": slug.current,    "lastModified": _updatedAt  }
+export type BlogPostsForSitemapQueryResult = Array<{
+  slug: string;
+  lastModified: string;
+}>;
+
+// Source: ../web/src/lib/sanity/queries/blog.ts
+// Variable: blogEnabledQuery
+// Query: *[_id == $id && _type == "siteSettings"][0].blogEnabled
+export type BlogEnabledQueryResult = boolean | null;
+
 // Source: ../web/src/lib/sanity/queries/global.ts
 // Variable: linkProjection
 // Query: {  label,  linkType,  openInNewTab,  "href": select(    linkType == "external" => externalUrl,    linkType == "internal" => "/" + internalReference->slug.current,    null  )}
@@ -1020,6 +1099,11 @@ export type AllRedirectsQueryResult = Array<{
 import '@sanity/client';
 declare module '@sanity/client' {
   interface SanityQueries {
+    '\n  *[_type == "blogPost" && defined(slug.current)] | order(publishedAt desc) {\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    excerpt,\n    coverImage,\n    publishedAt\n  }\n': AllBlogPostsQueryResult;
+    '\n  *[_type == "blogPost" && slug.current == $slug][0]{\n    _id,\n    _type,\n    title,\n    "slug": slug.current,\n    excerpt,\n    coverImage,\n    publishedAt,\n    body,\n    seo\n  }\n': BlogPostBySlugQueryResult;
+    '\n  *[_type == "blogPost" && defined(slug.current)]{\n    "slug": slug.current\n  }\n': AllBlogPostSlugsQueryResult;
+    '\n  *[_type == "blogPost" && defined(slug.current) && seo.noIndex != true]\n    | order(publishedAt desc) {\n    "slug": slug.current,\n    "lastModified": _updatedAt\n  }\n': BlogPostsForSitemapQueryResult;
+    '*[_id == $id && _type == "siteSettings"][0].blogEnabled': BlogEnabledQueryResult;
     '{\n  label,\n  linkType,\n  openInNewTab,\n  "href": select(\n    linkType == "external" => externalUrl,\n    linkType == "internal" => "/" + internalReference->slug.current,\n    null\n  )\n}': LinkProjectionResult;
     '*[_id == $id && _type == "siteSettings"][0]{\n  _id,\n  _type,\n  siteName,\n  siteDescription,\n  defaultOpenGraphImage,\n  organizationLegalName,\n  organizationUrl,\n  blogEnabled\n}': SiteSettingsQueryResult;
     '*[_id == $id && _type == "headerNavigation"][0]{\n  _id,\n  _type,\n  title,\n  links[]{\n  label,\n  linkType,\n  openInNewTab,\n  "href": select(\n    linkType == "external" => externalUrl,\n    linkType == "internal" => "/" + internalReference->slug.current,\n    null\n  )\n}\n}': HeaderNavigationQueryResult;
