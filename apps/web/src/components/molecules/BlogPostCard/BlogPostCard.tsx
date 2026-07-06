@@ -1,9 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card } from '@/components/atoms/Card';
+import { formatDate } from '@/lib/formatDate';
 
-/* BlogPostCard — one post on the /blog listing page. Cover image, date,
-   title, excerpt. The whole card links to the post. */
 type BlogPostCardProps = {
   title: string;
   slug: string;
@@ -12,15 +11,6 @@ type BlogPostCardProps = {
   coverImageAlt?: string;
   publishedAt?: string;
 };
-
-function formatDate(iso?: string): string | null {
-  if (!iso) return null;
-  return new Date(iso).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
 
 export function BlogPostCard({
   title,
@@ -33,13 +23,17 @@ export function BlogPostCard({
   const date = formatDate(publishedAt);
 
   return (
-    <Link href={`/blog/${slug}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+    <Link
+      href={`/blog/${slug}`}
+      aria-label={title}
+      style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+    >
       <Card padding={0} style={{ overflow: 'hidden', height: '100%' }}>
         {coverImageUrl && (
           <div style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9' }}>
             <Image
               src={coverImageUrl}
-              alt={coverImageAlt ?? title}
+              alt={coverImageAlt || title}
               fill
               sizes="(max-width: 560px) 100vw, (max-width: 860px) 50vw, 33vw"
               style={{ objectFit: 'cover' }}
@@ -51,6 +45,7 @@ export function BlogPostCard({
             <time
               dateTime={publishedAt}
               style={{ fontSize: 13, color: 'var(--text-muted, #9aa0a6)' }}
+              aria-hidden="true"
             >
               {date}
             </time>

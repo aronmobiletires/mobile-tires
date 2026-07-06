@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { PortableText, type PortableTextBlock } from '@portabletext/react';
+import { PortableText, type PortableTextBlock, type PortableTextComponents } from '@portabletext/react';
 import { createDocDataAttribute } from '@/lib/sanity/dataAttribute';
+import { formatDate } from '@/lib/formatDate';
 import { urlForImage } from '@/lib/sanity/image';
 import { getAllBlogPostSlugs, getBlogPostBySlug } from '@/lib/sanity/queries/blog';
 import { getSiteSettings } from '@/lib/sanity/queries/global';
@@ -40,6 +41,31 @@ export async function generateMetadata(props: {
   };
 }
 
+const portableTextComponents: PortableTextComponents = {
+  types: {
+    image: ({ value }: { value: { alt?: string } }) => (
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          aspectRatio: '16 / 9',
+          margin: '24px 0',
+          borderRadius: 'var(--radius-md)',
+          overflow: 'hidden',
+        }}
+      >
+        <Image
+          src={urlForImage(value).width(760).url()}
+          alt={value.alt || ''}
+          fill
+          sizes="(max-width: 800px) 100vw, 760px"
+          style={{ objectFit: 'cover' }}
+        />
+      </div>
+    ),
+  },
+};
+
 export default async function BlogPostPage(props: { params: Promise<RouteParams> }) {
   const { slug } = await props.params;
 
@@ -59,13 +85,7 @@ export default async function BlogPostPage(props: { params: Promise<RouteParams>
     datePublished: post.publishedAt,
   };
 
-  const date = post.publishedAt
-    ? new Date(post.publishedAt).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : null;
+  const date = formatDate(post.publishedAt);
 
   return (
     <main
@@ -76,7 +96,7 @@ export default async function BlogPostPage(props: { params: Promise<RouteParams>
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <article>
+      <article aria-labelledby="post-title">
         <header style={{ marginBottom: 32 }}>
           {date && (
             <time
@@ -86,7 +106,12 @@ export default async function BlogPostPage(props: { params: Promise<RouteParams>
               {date}
             </time>
           )}
-          <h1 style={{ margin: '8px 0 0', fontSize: 38, lineHeight: 1.2 }}>{post.title}</h1>
+          <h1
+            id="post-title"
+            style={{ margin: '8px 0 0', fontSize: 'clamp(26px, 5vw, 38px)', lineHeight: 1.2 }}
+          >
+            {post.title}
+          </h1>
         </header>
         {post.coverImage && (
           <div
@@ -101,7 +126,7 @@ export default async function BlogPostPage(props: { params: Promise<RouteParams>
           >
             <Image
               src={urlForImage(post.coverImage).width(1520).height(855).url()}
-              alt={post.coverImage.alt ?? post.title ?? ''}
+              alt={post.coverImage.alt || post.title || ''}
               fill
               sizes="(max-width: 800px) 100vw, 760px"
               style={{ objectFit: 'cover' }}
@@ -110,7 +135,10 @@ export default async function BlogPostPage(props: { params: Promise<RouteParams>
           </div>
         )}
         <div style={{ fontSize: 17, lineHeight: 1.7 }}>
-          <PortableText value={(post.body ?? []) as unknown as PortableTextBlock[]} />
+          <PortableText
+            value={(post.body ?? []) as unknown as PortableTextBlock[]}
+            components={portableTextComponents}
+          />
         </div>
       </article>
     </main>

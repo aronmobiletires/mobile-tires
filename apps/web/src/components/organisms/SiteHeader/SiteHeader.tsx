@@ -1,18 +1,20 @@
 import { Badge } from '@/components/atoms/Badge';
 import { Icon } from '@/components/atoms/Icon';
 import { createDocDataAttribute } from '@/lib/sanity/dataAttribute';
+import { resolveNavHref } from '@/lib/nav';
 import type { HeaderNavigationQueryResult } from '@/sanity.types';
 import Image from 'next/image';
+import Link from 'next/link';
 import { MobileMenu } from './MobileMenu';
 
 const DISPATCH_PHONE_HREF = 'tel:+16265887122';
 const DISPATCH_PHONE_LABEL = '(626) 588-7122';
 
 const FALLBACK_LINKS = [
-  { label: 'Services', href: '#services', openInNewTab: false },
-  { label: 'How it works', href: '#how-it-works', openInNewTab: false },
-  { label: 'Coverage', href: '#coverage', openInNewTab: false },
-  { label: 'Reviews', href: '#reviews', openInNewTab: false },
+  { label: 'Services', href: '/#services', openInNewTab: false },
+  { label: 'How it works', href: '/#how-it-works', openInNewTab: false },
+  { label: 'Coverage', href: '/#coverage', openInNewTab: false },
+  { label: 'Reviews', href: '/#reviews', openInNewTab: false },
 ];
 
 type SiteHeaderProps = {
@@ -40,31 +42,40 @@ export function SiteHeader({ navigation }: SiteHeaderProps) {
         borderBottom: '1px solid var(--border-default)',
       }}
     >
-      <a href="#top" aria-label="Medina's Mobile Tire Service" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
-        <Image src="/medinas/logo.png" alt="Medina's Mobile Tire Service" width={52} height={52} priority />
+      <Link href="/" aria-label="Medina's Mobile Tire Service" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+        <Image src="/medinas/logo.png" alt="" width={52} height={52} priority />
         <span style={{ fontFamily: 'var(--font-condensed)', fontSize: 17, lineHeight: 1.1, color: 'var(--off-white)' }}>
           Medina&apos;s Mobile
           <br />
           Tire Service
         </span>
-      </a>
+      </Link>
 
       <nav
         className="rr-desktop-nav"
         aria-label="Main navigation"
         style={{ display: 'flex', gap: 22, marginLeft: 20 }}
       >
-        {navLinks.map((link) => (
-          <a
-            key={link.href ?? link.label}
-            href={link.href ?? '#'}
-            target={link.openInNewTab ? '_blank' : undefined}
-            rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
-            style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 500, color: 'var(--steel-300)' }}
-          >
-            {link.label}
-          </a>
-        ))}
+        {navLinks.map((link) =>
+          link.href ? (
+            <a
+              key={link.href}
+              href={resolveNavHref(link.href)}
+              target={link.openInNewTab ? '_blank' : undefined}
+              rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+              style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 500, color: 'var(--steel-300)' }}
+            >
+              {link.label}
+            </a>
+          ) : (
+            <span
+              key={link.label}
+              style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 500, color: 'var(--steel-500)' }}
+            >
+              {link.label}
+            </span>
+          ),
+        )}
       </nav>
 
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>

@@ -12,7 +12,7 @@ import type {
 } from '@/sanity.types';
 
 const allBlogPostsQuery = groq`
-  *[_type == "blogPost" && defined(slug.current)] | order(publishedAt desc) {
+  *[_type == "blogPost" && defined(slug.current) && defined(publishedAt)] | order(publishedAt desc) {
     _id,
     _type,
     title,
@@ -38,7 +38,7 @@ const blogPostBySlugQuery = groq`
 `;
 
 const allBlogPostSlugsQuery = groq`
-  *[_type == "blogPost" && defined(slug.current)]{
+  *[_type == "blogPost" && defined(slug.current) && defined(publishedAt)]{
     "slug": slug.current
   }
 `;
