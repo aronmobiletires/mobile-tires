@@ -23,6 +23,7 @@ export default defineConfig({
   title,
   projectId,
   dataset,
+  autoUpdatesEnabled: false,
   plugins: [
     structureTool({ structure }),
     presentationTool({
