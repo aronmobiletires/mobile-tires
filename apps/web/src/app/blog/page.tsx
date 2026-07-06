@@ -28,7 +28,19 @@ export default async function BlogPage() {
         Tire care tips, maintenance guides, and service updates.
       </p>
       {posts.length === 0 ? (
-        <p style={{ fontSize: 16, color: 'var(--text-muted, #9aa0a6)' }}>No posts yet. Check back soon.</p>
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '80px 20px',
+            border: '1px dashed var(--border, #e0e0e0)',
+            borderRadius: 'var(--radius-md, 12px)',
+          }}
+        >
+          <p style={{ fontSize: 28, fontWeight: 700, margin: '0 0 12px' }}>Coming Soon</p>
+          <p style={{ fontSize: 16, color: 'var(--text-muted, #9aa0a6)', margin: 0 }}>
+            We&apos;re working on something great. Check back soon for tire tips, maintenance guides, and service updates.
+          </p>
+        </div>
       ) : (
         <div
           style={{
