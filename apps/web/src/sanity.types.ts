@@ -302,6 +302,7 @@ export type SiteSettings = {
   };
   organizationLegalName?: string;
   organizationUrl?: string;
+  blogEnabled?: boolean;
 };
 
 export type SanityImageCrop = {
@@ -548,7 +549,7 @@ export type LinkProjectionResult = {
 
 // Source: ../web/src/lib/sanity/queries/global.ts
 // Variable: siteSettingsQuery
-// Query: *[_id == $id && _type == "siteSettings"][0]{  _id,  _type,  siteName,  siteDescription,  defaultOpenGraphImage,  organizationLegalName,  organizationUrl}
+// Query: *[_id == $id && _type == "siteSettings"][0]{  _id,  _type,  siteName,  siteDescription,  defaultOpenGraphImage,  organizationLegalName,  organizationUrl,  blogEnabled}
 export type SiteSettingsQueryResult = {
   _id: string;
   _type: 'siteSettings';
@@ -563,6 +564,7 @@ export type SiteSettingsQueryResult = {
   } | null;
   organizationLegalName: string | null;
   organizationUrl: string | null;
+  blogEnabled: boolean | null;
 } | null;
 
 // Source: ../web/src/lib/sanity/queries/global.ts
@@ -1019,7 +1021,7 @@ import '@sanity/client';
 declare module '@sanity/client' {
   interface SanityQueries {
     '{\n  label,\n  linkType,\n  openInNewTab,\n  "href": select(\n    linkType == "external" => externalUrl,\n    linkType == "internal" => "/" + internalReference->slug.current,\n    null\n  )\n}': LinkProjectionResult;
-    '*[_id == $id && _type == "siteSettings"][0]{\n  _id,\n  _type,\n  siteName,\n  siteDescription,\n  defaultOpenGraphImage,\n  organizationLegalName,\n  organizationUrl\n}': SiteSettingsQueryResult;
+    '*[_id == $id && _type == "siteSettings"][0]{\n  _id,\n  _type,\n  siteName,\n  siteDescription,\n  defaultOpenGraphImage,\n  organizationLegalName,\n  organizationUrl,\n  blogEnabled\n}': SiteSettingsQueryResult;
     '*[_id == $id && _type == "headerNavigation"][0]{\n  _id,\n  _type,\n  title,\n  links[]{\n  label,\n  linkType,\n  openInNewTab,\n  "href": select(\n    linkType == "external" => externalUrl,\n    linkType == "internal" => "/" + internalReference->slug.current,\n    null\n  )\n}\n}': HeaderNavigationQueryResult;
     '*[_id == $id && _type == "footerNavigation"][0]{\n  _id,\n  _type,\n  title,\n  columns[]{\n    _key,\n    heading,\n    links[]{\n  label,\n  linkType,\n  openInNewTab,\n  "href": select(\n    linkType == "external" => externalUrl,\n    linkType == "internal" => "/" + internalReference->slug.current,\n    null\n  )\n}\n  },\n  copyright\n}': FooterNavigationQueryResult;
     '{\n  _id,\n  _type,\n  title,\n  "slug": slug.current,\n  seo,\n  pageSettings,\n  sections[]{\n    _type,\n    _key,\n    _type == "richText" => {\n      body\n    },\n    _type == "heroSection" => {\n      eyebrow,\n      headlineMain,\n      headlineAccent,\n      body,\n      trustMarkers[]{ icon, value, label }\n    },\n    _type == "trustBar" => {\n      items[]{ icon, value, label }\n    },\n    _type == "servicesSection" => {\n      eyebrow,\n      heading,\n      services[]{ icon, title, description, price }\n    },\n    _type == "howItWorks" => {\n      eyebrow,\n      heading,\n      steps[]{ title, description }\n    },\n    _type == "reviewsSection" => {\n      eyebrow,\n      heading,\n      rating,\n      reviewCount,\n      quotes[]{ quote, name, city }\n    },\n    _type == "coverageSection" => {\n      eyebrow,\n      heading,\n      body,\n      towns\n    },\n    _type == "depositCallout" => {\n      eyebrow,\n      heading,\n      body,\n      depositAmount,\n      depositLabel,\n      depositNote,\n      reasons[]{ icon, title, description }\n    },\n    _type == "smsBanner" => {\n      headline,\n      body,\n      phoneNumber,\n      phoneDisplay\n    }\n  }\n}': PageProjectionResult;
