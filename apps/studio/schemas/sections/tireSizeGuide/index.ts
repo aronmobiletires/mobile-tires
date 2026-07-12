@@ -1,11 +1,11 @@
 import { defineField, defineType } from 'sanity';
-import { GaugeIcon } from '@sanity/icons';
+import { DashboardIcon } from '@sanity/icons';
 
 export const tireSizeGuide = defineType({
   name: 'tireSizeGuide',
   title: 'Tire Size Guide',
   type: 'object',
-  icon: GaugeIcon,
+  icon: DashboardIcon,
   fields: [
     defineField({
       name: 'eyebrow',

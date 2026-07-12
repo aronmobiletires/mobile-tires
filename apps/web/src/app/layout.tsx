@@ -66,7 +66,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           {children}
         </main>
         <SiteFooter navigation={footerNavigation} />
-        <SanityLive />
+        {isDraftMode && <SanityLive />}
         {isDraftMode && <VisualEditing />}
       </body>
     </html>

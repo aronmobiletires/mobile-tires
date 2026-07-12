@@ -42,6 +42,8 @@ export function QuoteForm() {
   const [tireSize, setTireSize] = useState('');
   const [notes, setNotes] = useState('');
   const [located, setLocated] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
   const [service, setService] = useState('');
   const [showSizeHelp, setShowSizeHelp] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -73,6 +75,67 @@ export function QuoteForm() {
     if (requiresTireDetails && !tireSize.trim()) next.tireSize = 'Tire size is required for this service';
     setErrors(next);
     return Object.keys(next).length === 0;
+  }
+
+  async function handleUseMyLocation() {
+    if (typeof window === 'undefined') return;
+
+    if (!('geolocation' in navigator)) {
+      setLocationError('Location is not supported in this browser. Type your location instead.');
+      return;
+    }
+
+    setLocating(true);
+    setLocationError(null);
+
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 0,
+        });
+      });
+
+      const { latitude, longitude } = position.coords;
+      let resolvedAddress = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
+
+      try {
+        const reverse = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
+          {
+            headers: { Accept: 'application/json' },
+          },
+        );
+
+        if (reverse.ok) {
+          const payload = (await reverse.json()) as { display_name?: string };
+          if (payload.display_name) {
+            resolvedAddress = payload.display_name;
+          }
+        }
+      } catch {
+        // Keep coordinate fallback if reverse geocoding fails.
+      }
+
+      setAddress(resolvedAddress);
+      setLocated(true);
+    } catch (error) {
+      const geoError = error as GeolocationPositionError;
+
+      if (geoError?.code === 1) {
+        setLocationError('Location permission was blocked. Allow access and try again.');
+      } else if (geoError?.code === 2) {
+        setLocationError('Unable to determine your location right now. Try again in a moment.');
+      } else if (geoError?.code === 3) {
+        setLocationError('Location request timed out. Try again or enter your location manually.');
+      } else {
+        setLocationError('Unable to fetch your location. Enter your location manually instead.');
+      }
+      setLocated(false);
+    } finally {
+      setLocating(false);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -319,9 +382,16 @@ export function QuoteForm() {
           </legend>
           <LocationButton
             located={located}
-            address="I-10 E near Hacienda Blvd · La Puente, CA"
-            onClick={() => setLocated(!located)}
+            address={address}
+            loading={locating}
+            disabled={locating}
+            onClick={() => void handleUseMyLocation()}
           />
+          {locationError && (
+            <span role="alert" style={{ marginTop: 8, display: 'block', fontSize: 13, color: 'var(--signal-red)' }}>
+              {locationError}
+            </span>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '10px 0' }}>
             <span style={{ height: 1, flex: 1, background: 'var(--border-default)' }} />
             <span
