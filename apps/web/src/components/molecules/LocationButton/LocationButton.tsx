@@ -72,7 +72,7 @@ export function LocationButton({ located = false, address, loading = false, styl
             textOverflow: 'ellipsis',
           }}
         >
-          {located ? address || 'GPS pin set — tap to update' : 'Fastest way to get a tech to you'}
+          {located ? address || 'GPS pin set — tap to update' : 'Best option if you are parked or stopped safely'}
         </span>
       </span>
     </button>

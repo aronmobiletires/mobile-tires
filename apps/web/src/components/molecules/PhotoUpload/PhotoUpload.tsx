@@ -1,8 +1,8 @@
 import type { ChangeEventHandler, CSSProperties, HTMLAttributes, KeyboardEvent } from 'react';
 import { Icon } from '@/components/atoms/Icon';
 
-/* PhotoUpload — dashed drop target for the optional "snap a photo of the tire"
-   triage field. Shows a thumbnail preview once a file is chosen. */
+/* PhotoUpload — dashed drop target for optional request photos.
+  Shows a thumbnail preview once a file is chosen. */
 type PhotoUploadProps = {
   fileName?: string;
   previewUrl?: string;
@@ -25,7 +25,7 @@ export function PhotoUpload({ fileName, previewUrl, onPick, style, ...rest }: Ph
     <label
       tabIndex={0}
       role="button"
-      aria-label={hasFile ? `Photo attached: ${fileName ?? 'image'}. Press Enter to change` : 'Upload a photo of the tire. Press Enter to browse files'}
+      aria-label={hasFile ? `Photo attached: ${fileName ?? 'image'}. Press Enter to change` : 'Upload a photo. Press Enter to browse files'}
       onKeyDown={handleKeyDown}
       style={{
         display: 'flex',
@@ -82,7 +82,7 @@ export function PhotoUpload({ fileName, previewUrl, onPick, style, ...rest }: Ph
             color: 'var(--off-white)',
           }}
         >
-          {hasFile ? 'Photo attached' : 'Snap a photo of the tire'}
+          {hasFile ? 'Photo attached' : 'Add a photo'}
         </span>
         <span
           style={{
@@ -93,7 +93,7 @@ export function PhotoUpload({ fileName, previewUrl, onPick, style, ...rest }: Ph
             textOverflow: 'ellipsis',
           }}
         >
-          {hasFile ? fileName : 'Helps us triage before we roll — optional'}
+          {hasFile ? fileName : 'Optional, but helpful for faster triage'}
         </span>
       </span>
       <input type="file" accept="image/*" capture="environment" onChange={onPick} style={{ display: 'none' }} />

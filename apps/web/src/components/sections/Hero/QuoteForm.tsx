@@ -11,42 +11,127 @@ import { PhotoUpload } from '@/components/molecules/PhotoUpload';
 import { Select } from '@/components/molecules/Select';
 import { StatusPill } from '@/components/molecules/StatusPill';
 import { Textarea } from '@/components/molecules/Textarea';
+import { TireSizeDiagram } from '@/components/molecules/TireSizeDiagram';
+import { TechnicianChatBox } from './TechnicianChatBox';
 
-/* RoadReady landing — the intake quote form. Mirrors the service_request
-   model from mobile-tire-phase-plan.md. Front-end demo only for now: no
-   backend call yet (the real service-request API lives in the separate
-   TechBridge platform per the phase plan) — submit shows a placeholder
-   confirmation with a fixed ETA/deposit outcome. Swap in a real
-   `POST /api/service-requests` call when the backend is ready. */
+type ChatSession = {
+  conversationSid: string;
+  identity: string;
+  token: string;
+};
+
+type InitResponse = {
+  mode?: 'email' | 'sms';
+  message?: string;
+  conversationSid?: string;
+  identity?: string;
+  token?: string;
+};
+
+const ROADSIDE_ASSISTANCE_SERVICE = 'Roadside assistance (jump / fuel)';
+
+/* RoadReady landing — intake form wired to a local service-request API that
+  boots a Twilio conversation. After submit, the customer sees a live chat
+  box while the technician receives SMS in the same thread. */
 export function QuoteForm() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [isOnFreeway, setIsOnFreeway] = useState<boolean | null>(null);
+  const [vehicle, setVehicle] = useState('');
+  const [tireSize, setTireSize] = useState('');
+  const [notes, setNotes] = useState('');
   const [located, setLocated] = useState(false);
   const [service, setService] = useState('');
+  const [showSizeHelp, setShowSizeHelp] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [errors, setErrors] = useState<{ name?: string; phone?: string; service?: string }>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [deliveryMode, setDeliveryMode] = useState<'email' | 'sms'>('email');
+  const [chatSession, setChatSession] = useState<ChatSession | null>(null);
+  const [errors, setErrors] = useState<{
+    name?: string;
+    phone?: string;
+    service?: string;
+    isOnFreeway?: string;
+    vehicle?: string;
+    tireSize?: string;
+  }>({});
   const successRef = useRef<HTMLDivElement>(null);
 
   // Phase 4 deposit rule: ETA > 35 min OR after-hours → $70 deposit.
   const etaMin = 24;
   const afterHours = false;
   const depositApplies = etaMin > 35 || afterHours;
+  const requiresTireDetails = Boolean(service) && service !== ROADSIDE_ASSISTANCE_SERVICE;
 
   function validate() {
     const next: typeof errors = {};
     if (!name.trim()) next.name = 'Name is required';
     if (!phone.trim()) next.phone = 'Phone number is required';
-    if (!service) next.service = 'Please select a service type';
+    if (!service) next.service = 'Select a service type';
+    if (isOnFreeway === null) next.isOnFreeway = 'Select whether you are on the freeway';
+    if (!vehicle.trim()) next.vehicle = 'Vehicle type is required';
+    if (requiresTireDetails && !tireSize.trim()) next.tireSize = 'Tire size is required for this service';
     setErrors(next);
     return Object.keys(next).length === 0;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
-    setSubmitted(true);
-    // Focus the success announcement after React re-renders
-    setTimeout(() => successRef.current?.focus(), 50);
+
+    setSubmitError(null);
+    setSubmitting(true);
+
+    try {
+      const response = await fetch('/api/service-requests/init', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          phone,
+          service,
+          notes,
+          location: address,
+          isOnFreeway: isOnFreeway === true,
+          vehicle,
+          tireSize,
+        }),
+      });
+
+      const payload = (await response.json()) as InitResponse;
+
+      if (!response.ok) {
+        throw new Error(payload.message || 'Unable to submit request.');
+      }
+
+      const mode = payload.mode === 'sms' ? 'sms' : 'email';
+      setDeliveryMode(mode);
+
+      if (mode === 'sms') {
+        if (!payload.conversationSid || !payload.identity || !payload.token) {
+          throw new Error('Unable to start technician chat.');
+        }
+
+        setChatSession({
+          conversationSid: payload.conversationSid,
+          identity: payload.identity,
+          token: payload.token,
+        });
+      } else {
+        setChatSession(null);
+      }
+
+      setSubmitted(true);
+
+      // Focus the success announcement after React re-renders
+      setTimeout(() => successRef.current?.focus(), 50);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : 'Unable to submit request.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -75,8 +160,9 @@ export function QuoteForm() {
               A tech is being dispatched
             </h3>
             <p style={{ margin: 0, color: 'var(--steel-300)', fontSize: 15 }}>
-              We&apos;ve got your location. You&apos;ll get an SMS with your technician&apos;s name and a live
-              ETA.
+              {deliveryMode === 'sms'
+                ? 'We\'ve got your location. You\'ll get an SMS with your technician\'s name and a live ETA.'
+                : 'We\'ve received your request and sent it to the Medinas Tires team by email. They\'ll reach out shortly.'}
             </p>
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
@@ -116,10 +202,10 @@ export function QuoteForm() {
                 style={{
                   fontFamily: 'var(--font-display)',
                   fontSize: 30,
-                  color: depositApplies ? 'var(--caution-yellow)' : 'var(--signal-green)',
+                  color: 'var(--caution-yellow)',
                 }}
               >
-                {depositApplies ? '$70' : '$0'}
+                $70
               </div>
             </div>
           </div>
@@ -136,10 +222,30 @@ export function QuoteForm() {
             <span style={{ color: 'var(--signal-green)', flex: 'none', marginTop: 1 }}>
               <Icon name="check" size={16} strokeWidth={2.5} />
             </span>
-            Under 35 min and within hours — no deposit. You pay the balance on-site when the job&apos;s done.
+            The deposit only applies for longer ETAs or after-hours service. If it applies, it goes toward your total.
           </p>
         </div>
-        <Button variant="secondary" fullWidth onClick={() => setSubmitted(false)}>
+        {deliveryMode === 'sms' && chatSession ? (
+          <TechnicianChatBox
+            conversationSid={chatSession.conversationSid}
+            identity={chatSession.identity}
+            token={chatSession.token}
+          />
+        ) : (
+          <p style={{ margin: 0, fontSize: 13, color: 'var(--steel-300)' }}>
+            Live chat is off for now. A team member will contact you directly.
+          </p>
+        )}
+
+        <Button
+          variant="secondary"
+          fullWidth
+          onClick={() => {
+            setSubmitted(false);
+            setChatSession(null);
+            setDeliveryMode('email');
+          }}
+        >
           Start another request
         </Button>
       </Card>
@@ -157,7 +263,7 @@ export function QuoteForm() {
         </h2>
       </div>
 
-      <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <form onSubmit={(e) => void handleSubmit(e)} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div className="rr-form-2col">
           <div>
             <FieldLabel htmlFor="qf-name">Name</FieldLabel>
@@ -229,23 +335,168 @@ export function QuoteForm() {
                 color: 'var(--steel-500)',
               }}
             >
-              or enter address
+              or type your location
             </span>
             <span style={{ height: 1, flex: 1, background: 'var(--border-default)' }} />
           </div>
-          <Input id="qf-address" placeholder="Street, city or nearest exit" icon="map-pin" aria-label="Street address or nearest exit" />
+          <Input
+            id="qf-address"
+            placeholder="Street, city or nearest exit"
+            icon="map-pin"
+            aria-label="Street address or nearest exit"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+          <div
+            role="group"
+            aria-labelledby="qf-freeway-label"
+            aria-describedby={errors.isOnFreeway ? 'qf-freeway-err' : undefined}
+            style={{
+              marginTop: 12,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+            }}
+          >
+            <div
+              id="qf-freeway-label"
+              style={{
+                color: 'var(--off-white)',
+                fontSize: 14,
+                fontWeight: 600,
+              }}
+            >
+              Are you on the freeway right now?
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <button
+                type="button"
+                aria-pressed={isOnFreeway === true}
+                onClick={() => setIsOnFreeway(true)}
+                style={{
+                  height: 48,
+                  borderRadius: 'var(--radius-md)',
+                  border: `2px solid ${isOnFreeway === true ? 'var(--signal-orange)' : 'var(--border-default)'}`,
+                  background: isOnFreeway === true ? 'rgba(255, 90, 31, 0.14)' : 'var(--bg-input)',
+                  color: 'var(--off-white)',
+                  fontFamily: 'var(--font-condensed)',
+                  fontSize: 15,
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                }}
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                aria-pressed={isOnFreeway === false}
+                onClick={() => setIsOnFreeway(false)}
+                style={{
+                  height: 48,
+                  borderRadius: 'var(--radius-md)',
+                  border: `2px solid ${isOnFreeway === false ? 'var(--signal-orange)' : 'var(--border-default)'}`,
+                  background: isOnFreeway === false ? 'rgba(255, 90, 31, 0.14)' : 'var(--bg-input)',
+                  color: 'var(--off-white)',
+                  fontFamily: 'var(--font-condensed)',
+                  fontSize: 15,
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                }}
+              >
+                No
+              </button>
+            </div>
+            {errors.isOnFreeway && (
+              <span id="qf-freeway-err" role="alert" style={{ fontSize: 13, color: 'var(--signal-red)' }}>
+                {errors.isOnFreeway}
+              </span>
+            )}
+          </div>
         </fieldset>
 
         <div className="rr-form-2col">
           <div>
-            <FieldLabel htmlFor="qf-vehicle" optional>Vehicle</FieldLabel>
-            <Input id="qf-vehicle" placeholder="Make / model" />
+            <FieldLabel htmlFor="qf-vehicle">
+              Vehicle type
+            </FieldLabel>
+            <Input
+              id="qf-vehicle"
+              placeholder="Make / model"
+              aria-required="true"
+              aria-describedby={errors.vehicle ? 'qf-vehicle-err' : undefined}
+              invalid={Boolean(errors.vehicle)}
+              value={vehicle}
+              onChange={(e) => setVehicle(e.target.value)}
+            />
+            {errors.vehicle && (
+              <span id="qf-vehicle-err" role="alert" style={{ fontSize: 13, color: 'var(--signal-red)', marginTop: 4, display: 'block' }}>
+                {errors.vehicle}
+              </span>
+            )}
           </div>
           <div>
-            <FieldLabel htmlFor="qf-tiresize" optional hint="Not sure? Leave blank">
-              Tire size
-            </FieldLabel>
-            <Input id="qf-tiresize" placeholder="225/65R17" numeric />
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
+              <FieldLabel
+                htmlFor="qf-tiresize"
+                optional={!requiresTireDetails}
+                hint={requiresTireDetails ? 'Required for tire service' : 'If you know it'}
+              >
+                Tire size
+              </FieldLabel>
+              <button
+                type="button"
+                aria-expanded={showSizeHelp}
+                aria-controls="qf-tiresize-help"
+                aria-label={showSizeHelp ? 'Hide where to find your tire size' : 'Where do I find my tire size?'}
+                onClick={() => setShowSizeHelp((v) => !v)}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flex: 'none',
+                  width: 22,
+                  height: 22,
+                  marginBottom: 8,
+                  padding: 0,
+                  background: 'none',
+                  border: '1px solid var(--border-default)',
+                  borderRadius: '50%',
+                  color: 'var(--steel-300)',
+                  cursor: 'pointer',
+                }}
+              >
+                <Icon name="info" size={13} />
+              </button>
+            </div>
+            <Input
+              id="qf-tiresize"
+              placeholder="225/65R17"
+              numeric
+              aria-required={requiresTireDetails || undefined}
+              aria-describedby={errors.tireSize ? 'qf-tiresize-err' : undefined}
+              invalid={Boolean(errors.tireSize)}
+              value={tireSize}
+              onChange={(e) => setTireSize(e.target.value)}
+            />
+            {errors.tireSize && (
+              <span id="qf-tiresize-err" role="alert" style={{ fontSize: 13, color: 'var(--signal-red)', marginTop: 4, display: 'block' }}>
+                {errors.tireSize}
+              </span>
+            )}
+            {showSizeHelp && (
+              <div id="qf-tiresize-help" style={{ marginTop: 10 }}>
+                <Card padding={14} style={{ background: 'var(--bg-input)' }}>
+                  <p style={{ margin: '0 0 10px', fontSize: 12, color: 'var(--steel-300)', lineHeight: 1.4 }}>
+                    Find the size on your tire sidewall. It will look like this:
+                  </p>
+                  <TireSizeDiagram compact />
+                </Card>
+              </div>
+            )}
           </div>
         </div>
 
@@ -253,7 +504,7 @@ export function QuoteForm() {
           <FieldLabel htmlFor="qf-service">Service type</FieldLabel>
           <Select
             id="qf-service"
-            placeholder="What do you need?"
+            placeholder="Choose a service"
             aria-required="true"
             aria-describedby={errors.service ? 'qf-service-err' : undefined}
             invalid={Boolean(errors.service)}
@@ -262,7 +513,9 @@ export function QuoteForm() {
             options={[
               'Flat repair',
               'Tire replacement / mount',
-              'Roadside assistance (jump / lockout / fuel)',
+              'Brakes',
+              'Alignments',
+              'Roadside assistance (jump / fuel)',
               'Fleet / commercial',
             ]}
           />
@@ -274,11 +527,15 @@ export function QuoteForm() {
         </div>
 
         <div>
-          <FieldLabel htmlFor="qf-notes" optional>Notes</FieldLabel>
+          <FieldLabel htmlFor="qf-notes" optional hint="Anything that helps us find or help you faster">
+            Notes
+          </FieldLabel>
           <Textarea
             id="qf-notes"
             rows={2}
-            placeholder="Gate code, exit number, anything the tech should know…"
+            placeholder="Gate code, nearest exit, parking details, or anything else we should know"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
           />
         </div>
 
@@ -286,7 +543,13 @@ export function QuoteForm() {
           <PhotoUpload />
         </div>
 
-        <Button type="submit" variant="primary" size="lg" fullWidth iconRight="arrow-right">
+        {submitError && (
+          <p role="alert" style={{ margin: 0, fontSize: 13, color: 'var(--signal-red)' }}>
+            {submitError}
+          </p>
+        )}
+
+        <Button type="submit" variant="primary" size="lg" fullWidth iconRight="arrow-right" disabled={submitting}>
           Request a technician
         </Button>
 
@@ -304,11 +567,11 @@ export function QuoteForm() {
           <span style={{ color: 'var(--caution-yellow)', flex: 'none', marginTop: 1 }}>
             <Icon name="alert-triangle" size={16} />
           </span>
-          Typical response is under 35 min. A{' '}
+          Most requests get a response in under 35 minutes. A{' '}
           <span className="rr-numeric" style={{ color: 'var(--caution-yellow)' }}>
             &nbsp;$70&nbsp;
           </span>{' '}
-          deposit may apply if the ETA runs over 35 min or it&apos;s after hours — it goes toward your total.
+          deposit may apply for longer ETAs or after-hours service. If it applies, it goes toward your total.
         </p>
       </form>
     </Card>

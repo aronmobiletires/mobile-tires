@@ -4,18 +4,17 @@ import { Icon, type IconName } from '@/components/atoms/Icon';
 import Image from 'next/image';
 
 /* ServiceCard — a service in the services grid. Icon, title, one-line
-   description, optional "from $XX" starting price. Corner-bracket framed. */
+  description, and optional image. Corner-bracket framed. */
 type ServiceCardProps = {
   icon: IconName;
   title: string;
   description: string;
-  price?: string;
   imageSrc?: string;
   imageAlt?: string;
   style?: CSSProperties;
 } & HTMLAttributes<HTMLDivElement>;
 
-export function ServiceCard({ icon, title, description, price, imageSrc, imageAlt, style, ...rest }: ServiceCardProps) {
+export function ServiceCard({ icon, title, description, imageSrc, imageAlt, style, ...rest }: ServiceCardProps) {
   return (
     <Card brackets padding={22} style={{ display: 'flex', flexDirection: 'column', gap: 14, ...style }} {...rest}>
       {imageSrc && (
@@ -54,25 +53,6 @@ export function ServiceCard({ icon, title, description, price, imageSrc, imageAl
         </h3>
         <p style={{ margin: 0, fontSize: 15, color: 'var(--steel-300)', lineHeight: 1.5 }}>{description}</p>
       </div>
-      {price && (
-        <div style={{ marginTop: 'auto', paddingTop: 4 }}>
-          <span
-            style={{
-              fontSize: 13,
-              color: 'var(--steel-300)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              fontFamily: 'var(--font-condensed)',
-              fontWeight: 600,
-            }}
-          >
-            From{' '}
-          </span>
-          <span className="rr-numeric" style={{ fontFamily: 'var(--font-display)', fontSize: 22, color: 'var(--caution-yellow)' }}>
-            {price}
-          </span>
-        </div>
-      )}
     </Card>
   );
 }

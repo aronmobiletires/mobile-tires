@@ -87,6 +87,19 @@ pnpm storybook     # → http://localhost:6006
 
 If you hit port conflicts: `pkill -9 -f "next-server"` and `pkill -9 -f "sanity dev"`.
 
+### Troubleshooting startup issues
+
+- If you see `turbo is not recognized as an internal or external command`:
+	- Run `pnpm install` at the repo root first. `turbo` is a local dev dependency and is only available after install.
+- If you see `Unsupported engine: wanted: {"node":">=22"}`:
+	- Switch to Node 22 LTS, then reinstall dependencies.
+	- If `nvm` is installed: `nvm use` (uses `.nvmrc`).
+	- On Windows without `nvm`: install Node 22 LTS from nodejs.org, open a new terminal, then run `pnpm install` again.
+- Quick sanity checks:
+	- `node -v` should report `v22.x`.
+	- `pnpm -v` should report `10.x`.
+	- Run `pnpm run dev` after the above checks pass.
+
 ---
 
 ## Stack

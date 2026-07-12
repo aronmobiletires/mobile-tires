@@ -8,6 +8,7 @@ import { Reviews } from './Reviews';
 import { Coverage } from './Coverage';
 import { DepositCallout } from './DepositCallout';
 import { SmsBanner } from './SmsBanner';
+import { TireSizeGuide } from './TireSizeGuide';
 
 type PageSection = NonNullable<NonNullable<HomepageQueryResult>['sections']>[number];
 
@@ -40,6 +41,8 @@ export function Sections({ sections }: SectionsProps) {
             return <DepositCallout key={section._key} {...section} />;
           case 'smsBanner':
             return <SmsBanner key={section._key} {...section} />;
+          case 'tireSizeGuide':
+            return <TireSizeGuide key={section._key} {...section} />;
           default:
             if (process.env.NODE_ENV !== 'production') {
               const unknown = section as { _type: string; _key: string };

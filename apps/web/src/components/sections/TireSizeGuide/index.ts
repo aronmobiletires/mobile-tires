@@ -1,0 +1,1 @@
+export { TireSizeGuide } from './TireSizeGuide';

@@ -7,6 +7,7 @@ import { reviewsSection } from './reviewsSection';
 import { coverageSection } from './coverageSection';
 import { depositCallout } from './depositCallout';
 import { smsBanner } from './smsBanner';
+import { tireSizeGuide } from './tireSizeGuide';
 
 export const sectionTypes = [
   richText,
@@ -18,4 +19,5 @@ export const sectionTypes = [
   coverageSection,
   depositCallout,
   smsBanner,
+  tireSizeGuide,
 ];

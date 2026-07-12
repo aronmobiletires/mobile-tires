@@ -72,6 +72,12 @@ const pageProjection = groq`{
       body,
       phoneNumber,
       phoneDisplay
+    },
+    _type == "tireSizeGuide" => {
+      eyebrow,
+      heading,
+      body,
+      exampleSize
     }
   }
 }`;

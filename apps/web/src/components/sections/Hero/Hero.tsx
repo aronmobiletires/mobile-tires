@@ -1,7 +1,8 @@
 import { TrustMarker } from '@/components/molecules/TrustMarker';
+import { Card } from '@/components/atoms/Card';
+import { TireSizeDiagram } from '@/components/molecules/TireSizeDiagram';
 import type { HomepageQueryResult } from '@/sanity.types';
 import type { IconName } from '@/components/atoms/Icon';
-import Image from 'next/image';
 import { QuoteForm } from './QuoteForm';
 
 type PageSection = NonNullable<NonNullable<HomepageQueryResult>['sections']>[number];
@@ -66,16 +67,12 @@ export function Hero({ eyebrow, headlineMain, headlineAccent, body, trustMarkers
         </div>
 
         <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div className="rr-brackets" style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--border-default)' }}>
-            <Image
-              src="/medinas/service-to-home.jpg"
-              alt="Medina's Mobile Tire Service van working at a customer location"
-              fill
-              priority
-              sizes="(max-width: 860px) 100vw, 44vw"
-              style={{ objectFit: 'cover' }}
-            />
-          </div>
+          <Card brackets padding={16} style={{ background: 'var(--bg-card)' }}>
+            <p style={{ margin: '0 0 10px', fontSize: 12, color: 'var(--steel-300)', lineHeight: 1.4 }}>
+              Look on your tire&apos;s sidewall for a size like this:
+            </p>
+            <TireSizeDiagram compact />
+          </Card>
           <QuoteForm />
         </div>
       </div>

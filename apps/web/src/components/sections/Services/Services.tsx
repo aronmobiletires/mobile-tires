@@ -37,7 +37,6 @@ export function Services({ eyebrow, heading, services }: ServicesSectionProps) {
               icon={(s.icon ?? 'wrench') as IconName}
               title={s.title}
               description={s.description ?? ''}
-              price={s.price ?? undefined}
               imageSrc={SERVICE_IMAGES[i % SERVICE_IMAGES.length]}
               imageAlt={s.title}
             />

@@ -23,7 +23,8 @@ export type IconName =
   | 'dollar-sign'
   | 'message'
   | 'menu'
-  | 'gauge';
+  | 'gauge'
+  | 'info';
 
 const PATHS: Record<IconName, React.ReactNode> = {
   phone: <path d="M5 3h3l2 5-2 1.5a12 12 0 0 0 5.5 5.5L20 13l1 6-3 2C10 21 3 14 3 6z" />,
@@ -101,6 +102,12 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <>
       <path d="M4 18a8 8 0 1 1 16 0" />
       <path d="M12 14l4-4" />
+    </>
+  ),
+  info: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v6M12 7.5v.5" />
     </>
   ),
 };
