@@ -71,6 +71,8 @@ export function MobileMenu({ links }: MobileMenuProps) {
       <button
         type="button"
         aria-label={open ? 'Close menu' : 'Open menu'}
+        aria-controls="mobile-nav"
+        aria-haspopup="menu"
         aria-expanded={open}
         className="rr-mobile-menu-btn"
         onClick={() => setOpen((o) => !o)}
@@ -149,6 +151,8 @@ export function MobileMenu({ links }: MobileMenuProps) {
           )}
           <a
             href={DISPATCH_PHONE_HREF}
+            aria-label={`Call dispatch at ${DISPATCH_PHONE_LABEL}`}
+            onClick={() => setOpen(false)}
             style={{
               marginTop: 12,
               display: 'flex',

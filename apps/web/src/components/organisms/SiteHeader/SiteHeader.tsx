@@ -81,6 +81,7 @@ export function SiteHeader({ navigation }: SiteHeaderProps) {
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
         <a
           href={DISPATCH_PHONE_HREF}
+          aria-label={`Call dispatch at ${DISPATCH_PHONE_LABEL}`}
           className="rr-desktop-phone"
           style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}
         >
@@ -96,7 +97,7 @@ export function SiteHeader({ navigation }: SiteHeaderProps) {
         {/* Mobile-only phone link rendered as icon button */}
         <a
           href={DISPATCH_PHONE_HREF}
-          aria-label="Call dispatch"
+          aria-label={`Call dispatch at ${DISPATCH_PHONE_LABEL}`}
           className="rr-mobile-phone"
           style={{
             display: 'none',

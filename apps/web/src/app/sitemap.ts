@@ -23,9 +23,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
+  const legalEntries: MetadataRoute.Sitemap = [
+    {
+      url: `${baseUrl}/privacy`,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+    {
+      url: `${baseUrl}/terms`,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+    {
+      url: `${baseUrl}/deposit-policy`,
+      changeFrequency: 'monthly',
+      priority: 0.4,
+    },
+  ];
+
   // Disabled only when explicitly false; missing field counts as enabled.
   if (blogEnabled === false) {
-    return pageEntries;
+    return [...pageEntries, ...legalEntries];
   }
 
   const posts = await getBlogPostsForSitemap();
@@ -45,5 +63,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  return [...pageEntries, ...blogEntries];
+  return [...pageEntries, ...legalEntries, ...blogEntries];
 }

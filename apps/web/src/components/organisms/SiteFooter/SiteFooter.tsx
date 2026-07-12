@@ -40,6 +40,11 @@ const FALLBACK_COLUMNS = [
 ];
 
 const FALLBACK_COPYRIGHT = `© ${new Date().getFullYear()} Medina's Mobile Tire Service. All rights reserved.`;
+const LEGAL_LINKS = [
+  { label: 'Privacy', href: '/privacy' },
+  { label: 'Terms', href: '/terms' },
+  { label: 'Deposit policy', href: '/deposit-policy' },
+];
 
 export function SiteFooter({ navigation }: SiteFooterProps) {
   const sanityColumns = navigation?.columns ?? [];
@@ -124,9 +129,9 @@ export function SiteFooter({ navigation }: SiteFooterProps) {
         >
           <span style={{ fontSize: 13, color: 'var(--steel-500)' }}>{copyright}</span>
           <div style={{ display: 'flex', gap: 20 }}>
-            {['Privacy', 'Terms', 'Deposit policy'].map((l) => (
-              <a key={l} href="#" style={{ fontSize: 13, color: 'var(--steel-500)', textDecoration: 'none' }}>
-                {l}
+            {LEGAL_LINKS.map((link) => (
+              <a key={link.label} href={link.href} style={{ fontSize: 13, color: 'var(--steel-500)', textDecoration: 'none' }}>
+                {link.label}
               </a>
             ))}
           </div>

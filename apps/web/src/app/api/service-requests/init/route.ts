@@ -22,6 +22,17 @@ type RequestBody = {
   tireSize?: string;
 };
 
+type RequestAttachment = {
+  filename: string;
+  contentType: string;
+  contentBase64: string;
+};
+
+type ParsedRequest = {
+  body: RequestBody;
+  photo?: RequestAttachment;
+};
+
 function badRequest(message: string) {
   return NextResponse.json({ message }, { status: 400 });
 }
@@ -59,14 +70,72 @@ function getCommunicationMode(): 'email' | 'sms' {
   return mode === 'sms' ? 'sms' : 'email';
 }
 
+function parseBoolean(value: FormDataEntryValue | null): boolean {
+  if (typeof value !== 'string') return false;
+  return value.trim().toLowerCase() === 'true';
+}
+
+async function parseMultipartRequest(request: Request): Promise<ParsedRequest> {
+  const formData = await request.formData();
+  const maybePhoto = formData.get('photo');
+  let photo: RequestAttachment | undefined;
+
+  if (maybePhoto instanceof File && maybePhoto.size > 0) {
+    if (!maybePhoto.type.startsWith('image/')) {
+      throw new Error('Please upload an image file.');
+    }
+
+    if (maybePhoto.size > 10 * 1024 * 1024) {
+      throw new Error('Photo must be 10MB or smaller.');
+    }
+
+    const safeName = maybePhoto.name?.trim() || 'request-photo';
+    const bytes = Buffer.from(await maybePhoto.arrayBuffer());
+
+    photo = {
+      filename: safeName,
+      contentType: maybePhoto.type,
+      contentBase64: bytes.toString('base64'),
+    };
+  }
+
+  return {
+    body: {
+      name: typeof formData.get('name') === 'string' ? (formData.get('name') as string) : undefined,
+      phone: typeof formData.get('phone') === 'string' ? (formData.get('phone') as string) : undefined,
+      service: typeof formData.get('service') === 'string' ? (formData.get('service') as string) : undefined,
+      notes: typeof formData.get('notes') === 'string' ? (formData.get('notes') as string) : undefined,
+      location: typeof formData.get('location') === 'string' ? (formData.get('location') as string) : undefined,
+      isOnFreeway: parseBoolean(formData.get('isOnFreeway')),
+      vehicle: typeof formData.get('vehicle') === 'string' ? (formData.get('vehicle') as string) : undefined,
+      tireSize: typeof formData.get('tireSize') === 'string' ? (formData.get('tireSize') as string) : undefined,
+    },
+    photo,
+  };
+}
+
+async function parseRequest(request: Request): Promise<ParsedRequest> {
+  const contentType = request.headers.get('content-type')?.toLowerCase() || '';
+
+  if (contentType.includes('multipart/form-data')) {
+    return parseMultipartRequest(request);
+  }
+
+  const body = (await request.json()) as RequestBody;
+  return { body };
+}
+
 export async function POST(request: Request) {
-  let body: RequestBody;
+  let parsed: ParsedRequest;
 
   try {
-    body = (await request.json()) as RequestBody;
-  } catch {
-    return badRequest('Invalid JSON payload.');
+    parsed = await parseRequest(request);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Invalid request payload.';
+    return badRequest(message);
   }
+
+  const { body, photo } = parsed;
 
   const name = body.name?.trim();
   const rawPhone = body.phone?.trim();
@@ -99,6 +168,7 @@ export async function POST(request: Request) {
         vehicle,
         tireSize,
         notes,
+        photo,
       });
 
       return NextResponse.json({

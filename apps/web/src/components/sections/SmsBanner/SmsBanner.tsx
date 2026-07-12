@@ -11,9 +11,10 @@ export function SmsBanner({ headline, body, phoneNumber, phoneDisplay }: SmsBann
   const normalizedDisplay = ['(203) 555-0148', '203-555-0148', '2035550148'].includes(phoneDisplay)
     ? '(626) 588-7122'
     : phoneDisplay;
-  const smsHref = normalizedNumber.startsWith('+') ? `sms:${normalizedNumber}` : `sms:+1${normalizedNumber}`;
+  const callHref = normalizedNumber.startsWith('+') ? `tel:${normalizedNumber}` : `tel:+1${normalizedNumber}`;
+  const headingId = 'sms-banner-heading';
   return (
-    <section aria-label={headline} style={{ background: 'var(--signal-orange)' }}>
+    <section aria-labelledby={headingId} style={{ background: 'var(--signal-orange)' }}>
       <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '26px 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 20 }}>
         <span
           style={{
@@ -31,9 +32,12 @@ export function SmsBanner({ headline, body, phoneNumber, phoneDisplay }: SmsBann
           <Icon name="message" size={26} />
         </span>
         <div style={{ marginRight: 'auto' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, textTransform: 'uppercase', letterSpacing: '-0.01em', color: 'var(--graphite-950)' }}>
+          <h2
+            id={headingId}
+            style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 24, textTransform: 'uppercase', letterSpacing: '-0.01em', color: 'var(--graphite-950)' }}
+          >
             {headline}
-          </div>
+          </h2>
           {body && (
             <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--graphite-950)', opacity: 0.85 }}>
               {body}
@@ -41,7 +45,8 @@ export function SmsBanner({ headline, body, phoneNumber, phoneDisplay }: SmsBann
           )}
         </div>
         <a
-          href={smsHref}
+          href={callHref}
+          aria-label={`Call ${normalizedDisplay}`}
           className="rr-sms-cta"
           style={{
             display: 'inline-flex',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/atoms/Button';
 import { Card } from '@/components/atoms/Card';
 import { Icon } from '@/components/atoms/Icon';
@@ -41,6 +41,8 @@ export function QuoteForm() {
   const [vehicle, setVehicle] = useState('');
   const [tireSize, setTireSize] = useState('');
   const [notes, setNotes] = useState('');
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | undefined>(undefined);
   const [located, setLocated] = useState(false);
   const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
@@ -60,6 +62,20 @@ export function QuoteForm() {
     tireSize?: string;
   }>({});
   const successRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!photoFile) {
+      setPhotoPreviewUrl(undefined);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(photoFile);
+    setPhotoPreviewUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [photoFile]);
 
   // Phase 4 deposit rule: ETA > 35 min OR after-hours → $70 deposit.
   const etaMin = 24;
@@ -146,19 +162,23 @@ export function QuoteForm() {
     setSubmitting(true);
 
     try {
+      const formData = new FormData();
+      formData.set('name', name);
+      formData.set('phone', phone);
+      formData.set('service', service);
+      formData.set('notes', notes);
+      formData.set('location', address);
+      formData.set('isOnFreeway', String(isOnFreeway === true));
+      formData.set('vehicle', vehicle);
+      formData.set('tireSize', tireSize);
+
+      if (photoFile) {
+        formData.set('photo', photoFile, photoFile.name);
+      }
+
       const response = await fetch('/api/service-requests/init', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          phone,
-          service,
-          notes,
-          location: address,
-          isOnFreeway: isOnFreeway === true,
-          vehicle,
-          tireSize,
-        }),
+        body: formData,
       });
 
       const payload = (await response.json()) as InitResponse;
@@ -193,6 +213,11 @@ export function QuoteForm() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  function handlePhotoPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const nextFile = e.target.files?.[0] ?? null;
+    setPhotoFile(nextFile);
   }
 
   if (submitted) {
@@ -608,7 +633,7 @@ export function QuoteForm() {
         </div>
 
         <div>
-          <PhotoUpload />
+          <PhotoUpload fileName={photoFile?.name} previewUrl={photoPreviewUrl} onPick={handlePhotoPick} />
         </div>
 
         {submitError && (

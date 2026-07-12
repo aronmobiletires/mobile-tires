@@ -9,6 +9,11 @@ type ServiceRequestEmailPayload = {
   vehicle?: string;
   tireSize?: string;
   notes?: string;
+  photo?: {
+    filename: string;
+    contentType: string;
+    contentBase64: string;
+  };
 };
 
 function readRequiredEnv(name: string): string {
@@ -37,6 +42,7 @@ function buildMessageText(data: ServiceRequestEmailPayload): string {
   if (data.vehicle) lines.push(`Vehicle: ${data.vehicle}`);
   if (data.tireSize) lines.push(`Tire size: ${data.tireSize}`);
   if (data.notes) lines.push(`Notes: ${data.notes}`);
+  if (data.photo) lines.push(`Photo: attached (${data.photo.filename})`);
 
   return lines.join('\n');
 }
@@ -53,6 +59,7 @@ function buildMessageHtml(data: ServiceRequestEmailPayload): string {
   if (data.vehicle) sections.push(`<p><strong>Vehicle:</strong> ${data.vehicle}</p>`);
   if (data.tireSize) sections.push(`<p><strong>Tire size:</strong> ${data.tireSize}</p>`);
   if (data.notes) sections.push(`<p><strong>Notes:</strong> ${data.notes}</p>`);
+  if (data.photo) sections.push(`<p><strong>Photo:</strong> Attached (${data.photo.filename})</p>`);
 
   return `<h2>New technician request</h2>${sections.join('')}`;
 }
@@ -74,6 +81,14 @@ async function sendWithResend(data: ServiceRequestEmailPayload) {
       subject: `New mobile tire request: ${data.service}`,
       html: buildMessageHtml(data),
       text: buildMessageText(data),
+      attachments: data.photo
+        ? [
+            {
+              filename: data.photo.filename,
+              content: data.photo.contentBase64,
+            },
+          ]
+        : undefined,
     }),
   });
 
@@ -105,6 +120,15 @@ async function sendWithSmtp(data: ServiceRequestEmailPayload) {
     subject: `New mobile tire request: ${data.service}`,
     text: buildMessageText(data),
     html: buildMessageHtml(data),
+    attachments: data.photo
+      ? [
+          {
+            filename: data.photo.filename,
+            content: Buffer.from(data.photo.contentBase64, 'base64'),
+            contentType: data.photo.contentType,
+          },
+        ]
+      : undefined,
   });
 }
 
