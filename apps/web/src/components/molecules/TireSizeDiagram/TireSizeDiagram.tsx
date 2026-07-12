@@ -11,7 +11,7 @@ function parseSize(size: string) {
   const match = size.match(/^(\d{3})\/(\d{2,3})\s*R\s*(\d{2})\s*(.*)$/i);
   if (!match) return null;
   const [, width, ratio, diameter, loadSpeed] = match;
-  return { width, ratio, diameter, loadSpeed: loadSpeed.trim() };
+  return { width, ratio, diameter, loadSpeed: (loadSpeed ?? '').trim() };
 }
 
 /* Labeled tire-sidewall callout — recreates the classic "205/55R16" width /

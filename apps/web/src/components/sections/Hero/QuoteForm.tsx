@@ -61,8 +61,6 @@ export function QuoteForm() {
 
   // Phase 4 deposit rule: ETA > 35 min OR after-hours → $70 deposit.
   const etaMin = 24;
-  const afterHours = false;
-  const depositApplies = etaMin > 35 || afterHours;
   const requiresTireDetails = Boolean(service) && service !== ROADSIDE_ASSISTANCE_SERVICE;
 
   function validate() {
