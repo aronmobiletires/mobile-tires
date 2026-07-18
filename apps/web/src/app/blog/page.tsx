@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BlogPostCard } from '@/components/molecules/BlogPostCard';
 import { createDocDataAttribute } from '@/lib/sanity/dataAttribute';
+import { getAllLocalBlogPosts } from '@/lib/localContent/blogPosts';
 import { urlForImage } from '@/lib/sanity/image';
 import { getAllBlogPosts } from '@/lib/sanity/queries/blog';
 import { getSiteSettings } from '@/lib/sanity/queries/global';
@@ -16,10 +17,48 @@ export const metadata: Metadata = {
 
 export default async function BlogPage() {
   const settings = await getSiteSettings();
-  // Disabled only when explicitly false; missing field counts as enabled.
-  if (settings?.blogEnabled === false) notFound();
+  const localPosts = getAllLocalBlogPosts();
+  const isBlogDisabled = settings?.blogEnabled === false;
 
-  const posts = await getAllBlogPosts();
+  if (isBlogDisabled && localPosts.length === 0) notFound();
+
+  const sanityPosts = isBlogDisabled ? [] : await getAllBlogPosts();
+  const sanitySlugs = new Set(
+    sanityPosts
+      .map((post) => post.slug)
+      .filter((slug): slug is string => Boolean(slug)),
+  );
+
+  const mergedPosts = [
+    ...sanityPosts.map((post) => ({
+      key: post._id,
+      title: post.title ?? 'Untitled post',
+      slug: post.slug ?? '',
+      excerpt: post.excerpt ?? '',
+      coverImageUrl: post.coverImage
+        ? urlForImage(post.coverImage).width(800).height(450).url()
+        : undefined,
+      coverImageAlt: post.coverImage?.alt ?? undefined,
+      publishedAt: post.publishedAt ?? undefined,
+      sanityDoc: post,
+    })),
+    ...localPosts
+      .filter((post) => !sanitySlugs.has(post.slug))
+      .map((post) => ({
+        key: `local:${post.slug}`,
+        title: post.title,
+        slug: post.slug,
+        excerpt: post.excerpt,
+        coverImageUrl: post.coverImageUrl,
+        coverImageAlt: post.coverImageAlt,
+        publishedAt: post.publishedAt,
+        sanityDoc: null,
+      })),
+  ].sort(
+    (a, b) =>
+      new Date(b.publishedAt ?? 0).getTime() -
+      new Date(a.publishedAt ?? 0).getTime(),
+  );
 
   return (
     <main style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 20px' }}>
@@ -27,7 +66,7 @@ export default async function BlogPage() {
       <p style={{ margin: '0 0 36px', fontSize: 17, color: 'var(--text-muted, #9aa0a6)' }}>
         Tire care tips, maintenance guides, and service updates.
       </p>
-      {posts.length === 0 ? (
+      {mergedPosts.length === 0 ? (
         <div
           style={{
             textAlign: 'center',
@@ -49,19 +88,18 @@ export default async function BlogPage() {
             gap: 24,
           }}
         >
-          {posts.map((post) => (
-            <div key={post._id} data-sanity={createDocDataAttribute(post).toString()}>
+          {mergedPosts.map((post) => (
+            <div
+              key={post.key}
+              data-sanity={post.sanityDoc ? createDocDataAttribute(post.sanityDoc).toString() : undefined}
+            >
               <BlogPostCard
-                title={post.title ?? 'Untitled post'}
-                slug={post.slug ?? ''}
-                excerpt={post.excerpt ?? ''}
-                coverImageUrl={
-                  post.coverImage
-                    ? urlForImage(post.coverImage).width(800).height(450).url()
-                    : undefined
-                }
-                coverImageAlt={post.coverImage?.alt ?? undefined}
-                publishedAt={post.publishedAt ?? undefined}
+                title={post.title}
+                slug={post.slug}
+                excerpt={post.excerpt}
+                coverImageUrl={post.coverImageUrl}
+                coverImageAlt={post.coverImageAlt}
+                publishedAt={post.publishedAt}
               />
             </div>
           ))}

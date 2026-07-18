@@ -1,11 +1,13 @@
 import { Icon } from '@/components/atoms/Icon';
+import { getServiceAreaCityByName } from '@/lib/seo/serviceAreas';
 import type { HomepageQueryResult } from '@/sanity.types';
 import Image from 'next/image';
+import Link from 'next/link';
 
 type PageSection = NonNullable<NonNullable<HomepageQueryResult>['sections']>[number];
 export type CoverageSectionProps = Extract<PageSection, { _type: 'coverageSection' }>;
 
-export function Coverage({ eyebrow, heading, body, towns }: CoverageSectionProps) {
+export function Coverage({ eyebrow, heading, body, towns, areaLabel }: CoverageSectionProps) {
   return (
     <section id="coverage" aria-labelledby="coverage-heading" style={{ background: 'var(--bg-page)' }}>
       <div style={{ maxWidth: 'var(--container-max)', margin: '0 auto', padding: '64px 20px' }}>
@@ -31,28 +33,47 @@ export function Coverage({ eyebrow, heading, body, towns }: CoverageSectionProps
               </p>
             )}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {towns.map((town) => (
-                <span
-                  key={town}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    padding: '7px 12px',
-                    background: 'var(--bg-section)',
-                    border: '1px solid var(--border-default)',
-                    borderRadius: 'var(--radius-md)',
-                    fontSize: 14,
-                    fontWeight: 500,
-                    color: 'var(--off-white)',
-                  }}
-                >
-                  <span style={{ display: 'flex', color: 'var(--signal-orange)' }}>
-                    <Icon name="map-pin" size={14} />
-                  </span>
-                  {town}
-                </span>
-              ))}
+              {towns.map((town) => {
+                const serviceArea = getServiceAreaCityByName(town);
+                const href = serviceArea ? `/service-areas/${serviceArea.slug}` : undefined;
+
+                const content = (
+                  <>
+                    <span style={{ display: 'flex', color: 'var(--signal-orange)' }}>
+                      <Icon name="map-pin" size={14} />
+                    </span>
+                    {town}
+                  </>
+                );
+
+                const chipStyle = {
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '7px 12px',
+                  background: 'var(--bg-section)',
+                  border: '1px solid var(--border-default)',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: 'var(--off-white)',
+                  textDecoration: 'none',
+                } as const;
+
+                if (!href) {
+                  return (
+                    <span key={town} style={chipStyle}>
+                      {content}
+                    </span>
+                  );
+                }
+
+                return (
+                  <Link key={town} href={href} style={chipStyle} aria-label={`View tire service coverage for ${town}, California`}>
+                    {content}
+                  </Link>
+                );
+              })}
             </div>
           </div>
           <div
@@ -73,21 +94,23 @@ export function Coverage({ eyebrow, heading, body, towns }: CoverageSectionProps
               sizes="(max-width: 860px) 100vw, 42vw"
               style={{ objectFit: 'cover' }}
             />
-            <span
-              style={{
-                position: 'absolute',
-                left: 14,
-                bottom: 12,
-                fontFamily: 'var(--font-condensed)',
-                fontWeight: 600,
-                fontSize: 12,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                color: 'var(--steel-300)',
-              }}
-            >
-              Service radius · ~25 mi
-            </span>
+            {areaLabel && (
+              <span
+                style={{
+                  position: 'absolute',
+                  left: 14,
+                  bottom: 12,
+                  fontFamily: 'var(--font-condensed)',
+                  fontWeight: 600,
+                  fontSize: 12,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  color: 'var(--steel-300)',
+                }}
+              >
+                {areaLabel}
+              </span>
+            )}
           </div>
         </div>
       </div>

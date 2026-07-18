@@ -32,6 +32,13 @@ export const coverageSection = defineType({
       validation: (Rule) => Rule.required().min(1),
       of: [defineArrayMember({ type: 'string' })],
     }),
+    defineField({
+      name: 'areaLabel',
+      title: 'Area label',
+      type: 'string',
+      description: 'Small caption over the coverage image, e.g. "Service area · La Puente, CA" or "Service radius · 25 mi".',
+      validation: (Rule) => Rule.required(),
+    }),
   ],
   preview: {
     select: { heading: 'heading' },

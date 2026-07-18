@@ -11,10 +11,24 @@ type ServiceCardProps = {
   description: string;
   imageSrc?: string;
   imageAlt?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  ctaOpenInNewTab?: boolean;
   style?: CSSProperties;
 } & HTMLAttributes<HTMLDivElement>;
 
-export function ServiceCard({ icon, title, description, imageSrc, imageAlt, style, ...rest }: ServiceCardProps) {
+export function ServiceCard({
+  icon,
+  title,
+  description,
+  imageSrc,
+  imageAlt,
+  ctaLabel,
+  ctaHref,
+  ctaOpenInNewTab,
+  style,
+  ...rest
+}: ServiceCardProps) {
   return (
     <Card brackets padding={22} style={{ display: 'flex', flexDirection: 'column', gap: 14, ...style }} {...rest}>
       {imageSrc && (
@@ -53,6 +67,28 @@ export function ServiceCard({ icon, title, description, imageSrc, imageAlt, styl
         </h3>
         <p style={{ margin: 0, fontSize: 15, color: 'var(--steel-300)', lineHeight: 1.5 }}>{description}</p>
       </div>
+      {ctaLabel && ctaHref ? (
+        <a
+          href={ctaHref}
+          target={ctaOpenInNewTab ? '_blank' : undefined}
+          rel={ctaOpenInNewTab ? 'noopener noreferrer' : undefined}
+          style={{
+            marginTop: 6,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            fontFamily: 'var(--font-condensed)',
+            fontSize: 14,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            color: 'var(--signal-orange)',
+          }}
+        >
+          <span>{ctaLabel}</span>
+          <Icon name="arrow-right" size={16} />
+        </a>
+      ) : null}
     </Card>
   );
 }

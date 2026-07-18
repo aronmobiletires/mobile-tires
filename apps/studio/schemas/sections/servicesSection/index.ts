@@ -37,6 +37,12 @@ export const servicesSection = defineType({
             defineField({ name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required() }),
             defineField({ name: 'description', title: 'Description', type: 'text', rows: 2 }),
             defineField({ name: 'price', title: 'Price', type: 'string', description: 'Optional, e.g. "$49"' }),
+            defineField({
+              name: 'cta',
+              title: 'Card link',
+              type: 'link',
+              description: 'Optional. Add a link to a dedicated service page.',
+            }),
           ],
           preview: {
             select: { title: 'title', subtitle: 'price' },

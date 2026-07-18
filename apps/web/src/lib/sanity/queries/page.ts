@@ -38,7 +38,22 @@ const pageProjection = groq`{
     _type == "servicesSection" => {
       eyebrow,
       heading,
-      services[]{ icon, title, description, price }
+      services[]{
+        icon,
+        title,
+        description,
+        price,
+        cta{
+          label,
+          linkType,
+          openInNewTab,
+          "href": select(
+            linkType == "external" => externalUrl,
+            linkType == "internal" => "/" + internalReference->slug.current,
+            null
+          )
+        }
+      }
     },
     _type == "howItWorks" => {
       eyebrow,
@@ -56,7 +71,8 @@ const pageProjection = groq`{
       eyebrow,
       heading,
       body,
-      towns
+      towns,
+      areaLabel
     },
     _type == "depositCallout" => {
       eyebrow,

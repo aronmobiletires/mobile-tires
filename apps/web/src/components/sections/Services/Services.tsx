@@ -1,6 +1,7 @@
 import { ServiceCard } from '@/components/molecules/ServiceCard';
 import type { HomepageQueryResult } from '@/sanity.types';
 import type { IconName } from '@/components/atoms/Icon';
+import { resolveNavHref } from '@/lib/nav';
 
 type PageSection = NonNullable<NonNullable<HomepageQueryResult>['sections']>[number];
 export type ServicesSectionProps = Extract<PageSection, { _type: 'servicesSection' }>;
@@ -39,6 +40,9 @@ export function Services({ eyebrow, heading, services }: ServicesSectionProps) {
               description={s.description ?? ''}
               imageSrc={SERVICE_IMAGES[i % SERVICE_IMAGES.length]}
               imageAlt={s.title}
+              ctaLabel={s.cta?.label ?? undefined}
+              ctaHref={s.cta?.href ? resolveNavHref(s.cta.href) : undefined}
+              ctaOpenInNewTab={s.cta?.openInNewTab ?? undefined}
             />
           ))}
         </div>
