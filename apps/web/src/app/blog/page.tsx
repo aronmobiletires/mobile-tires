@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { BlogPostCard } from '@/components/molecules/BlogPostCard';
+import { PreferredSourceButton } from '@/components/molecules/PreferredSourceButton';
 import { createDocDataAttribute } from '@/lib/sanity/dataAttribute';
 import { getAllLocalBlogPosts } from '@/lib/localContent/blogPosts';
 import { urlForImage } from '@/lib/sanity/image';
@@ -63,9 +64,23 @@ export default async function BlogPage() {
   return (
     <main style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 20px' }}>
       <h1 style={{ margin: '0 0 8px', fontSize: 36, lineHeight: 1.2 }}>Blog</h1>
-      <p style={{ margin: '0 0 36px', fontSize: 17, color: 'var(--text-muted, #9aa0a6)' }}>
+      <p style={{ margin: '0 0 20px', fontSize: 17, color: 'var(--text-muted, #9aa0a6)' }}>
         Tire care tips, maintenance guides, and service updates.
       </p>
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          gap: 10,
+          margin: '0 0 36px',
+        }}
+      >
+        <span style={{ fontSize: 14, color: 'var(--text-muted, #9aa0a6)' }}>
+          Follow us in Google Search:
+        </span>
+        <PreferredSourceButton theme="light" lang="en" />
+      </div>
       {mergedPosts.length === 0 ? (
         <div
           style={{

@@ -1,4 +1,5 @@
 import { Badge } from '@/components/atoms/Badge';
+import { PreferredSourceButton } from '@/components/molecules/PreferredSourceButton';
 import { createDocDataAttribute } from '@/lib/sanity/dataAttribute';
 import { resolveNavHref } from '@/lib/nav';
 import type { FooterNavigationQueryResult } from '@/sanity.types';
@@ -77,6 +78,9 @@ export function SiteFooter({ navigation }: SiteFooterProps) {
               <Badge tone="caution" icon="shield">
                 Licensed &amp; insured
               </Badge>
+            </div>
+            <div style={{ marginTop: 16 }}>
+              <PreferredSourceButton theme="dark" lang="en" />
             </div>
           </div>
           {columns.map((col) => (

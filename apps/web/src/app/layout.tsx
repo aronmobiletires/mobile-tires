@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Archivo_Black, Barlow, Barlow_Condensed } from 'next/font/google';
 import { draftMode } from 'next/headers';
 import { VisualEditing } from 'next-sanity/visual-editing';
@@ -152,6 +153,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* Google "Preferred Sources" button. Scans the DOM for
+            PreferredSourceButton markers and swaps in the interactive button. */}
+        <Script src="https://news.google.com/swg/js/v1/publisher.js" strategy="lazyOnload" />
         {isDraftMode && <SanityLive />}
         {isDraftMode && <VisualEditing />}
       </body>
