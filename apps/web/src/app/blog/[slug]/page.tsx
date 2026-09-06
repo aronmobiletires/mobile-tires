@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PortableText, type PortableTextBlock, type PortableTextComponents } from '@portabletext/react';
+import { PreferredSourceButton } from '@/components/molecules/PreferredSourceButton';
 import { createDocDataAttribute } from '@/lib/sanity/dataAttribute';
 import { formatDate } from '@/lib/formatDate';
 import { getAllLocalBlogPosts, getLocalBlogPostBySlug } from '@/lib/localContent/blogPosts';
@@ -177,6 +178,23 @@ export default async function BlogPostPage(props: { params: Promise<RouteParams>
               Need help now? Request mobile tire service.
             </Link>
           </div>
+
+          <div
+            style={{
+              marginTop: 28,
+              paddingTop: 20,
+              borderTop: '1px solid var(--border, #e0e0e0)',
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              gap: 10,
+            }}
+          >
+            <span style={{ fontSize: 14, color: 'var(--text-muted, #9aa0a6)' }}>
+              Follow us in Google Search:
+            </span>
+            <PreferredSourceButton theme="light" lang="en" />
+          </div>
         </article>
       </main>
     );
@@ -247,6 +265,23 @@ export default async function BlogPostPage(props: { params: Promise<RouteParams>
             value={(post.body ?? []) as unknown as PortableTextBlock[]}
             components={portableTextComponents}
           />
+        </div>
+
+        <div
+          style={{
+            marginTop: 28,
+            paddingTop: 20,
+            borderTop: '1px solid var(--border, #e0e0e0)',
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            gap: 10,
+          }}
+        >
+          <span style={{ fontSize: 14, color: 'var(--text-muted, #9aa0a6)' }}>
+            Follow us in Google Search:
+          </span>
+          <PreferredSourceButton theme="light" lang="en" />
         </div>
       </article>
     </main>
